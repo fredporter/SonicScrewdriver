@@ -23,7 +23,7 @@
       "ROADMAP.md": "markdown",
       "*.yaml": "yaml",
     },
-    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+    "python.defaultInterpreterPath": "/Users/fredbook/.venvs/global/bin/python",
     "python.terminal.activateEnvironment": true,
     "python.analysis.typeCheckingMode": "basic",
   },
