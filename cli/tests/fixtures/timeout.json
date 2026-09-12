@@ -1,0 +1,22 @@
+{
+  "platform": "linux",
+  "execution_host": "hung-bus-host",
+  "observed_at": "2026-09-12T10:00:00+00:00",
+  "probes": {
+    "usb": {
+      "status": "timeout",
+      "duration_ms": 5002.1,
+      "error": "Probe timed out after 5.0s"
+    },
+    "pci": {
+      "status": "ok",
+      "duration_ms": 5.0,
+      "output": ""
+    },
+    "block": {
+      "status": "ok",
+      "duration_ms": 5.0,
+      "output": "{\"blockdevices\": []}"
+    }
+  }
+}

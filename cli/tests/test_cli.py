@@ -10,7 +10,7 @@ from sonic.cli import cli
 def test_cli_no_args_shows_help(runner: CliRunner) -> None:
     result = runner.invoke(cli)
     assert result.exit_code == 0
-    assert "SonicScrewdriver" in result.output
+    assert "Sonic-Screwdriver" in result.output
 
 
 def test_cli_version(runner: CliRunner) -> None:
@@ -28,6 +28,6 @@ def test_cli_help_lists_command_groups(runner: CliRunner) -> None:
     result = runner.invoke(cli, ["--help"])
     assert result.exit_code == 0
     for group in [
-        "usb", "security", "mint", "device", "bootloader", "mesh", "chasis",
+        "diagnostics",
     ]:
         assert group in result.output

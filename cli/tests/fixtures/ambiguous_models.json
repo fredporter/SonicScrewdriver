@@ -1,0 +1,22 @@
+{
+  "platform": "linux",
+  "execution_host": "multi-candidate-host",
+  "observed_at": "2026-09-12T10:00:00+00:00",
+  "probes": {
+    "usb": {
+      "status": "ok",
+      "duration_ms": 3.0,
+      "output": "Bus 001 Device 005: ID 046d:c52b Logitech Archer Shared Dongle"
+    },
+    "pci": {
+      "status": "ok",
+      "duration_ms": 4.0,
+      "output": ""
+    },
+    "block": {
+      "status": "ok",
+      "duration_ms": 5.0,
+      "output": "{\"blockdevices\": []}"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "id": "sonic",
+  "name": "Sonic Screwdriver",
+  "kind": "surface",
+  "version": "0.1.0",
+  "description": "Hardware revival, device discovery, diagnostics, and provisioning",
+  "optional": true,
+  "route": "/sonic",
+  "icon": "build_circle",
+  "api_prefix": "/api/sonic",
+  "dependencies": ["ucore-core"]
+}

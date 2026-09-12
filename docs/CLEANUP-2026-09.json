@@ -1,0 +1,287 @@
+{
+  "date": "2026-09-10",
+  "authorization": "User requested deprecated code/docs removal after assessment",
+  "recovery": "Tracked files remain in Git history; pre-cleanup source snapshot in /private/tmp/sonic-pre-revival-2026-09-10.tar.gz excludes legacy root binary",
+  "removed": [
+    {
+      "path": ".github/workflows/release.yaml",
+      "sha256": "5a77d8f72c304bcf87ce3c345b7acb749cfe7d6f7cbec36b2b059efbf4acce80",
+      "bytes": 407
+    },
+    {
+      "path": ".gitmodules",
+      "sha256": "4bc51f509cccb7e6da0f78cafc8ba8f0b848fb9e86d4660ab2b9f4f02f4eabde",
+      "bytes": 48
+    },
+    {
+      "path": ".tasker.dev-flow.yaml",
+      "sha256": "bdd18cdc120ae7925e7906933a0b795d77784314502384f66cf5249bf0a43cf7",
+      "bytes": 9167
+    },
+    {
+      "path": "bootloader/Makefile",
+      "sha256": "93a829fd55d2a315d0b666fa8d3a646f88665ec7b13dc9d68408aaf5b64b88cb",
+      "bytes": 4002
+    },
+    {
+      "path": "bootloader/config/menus/bios.yaml",
+      "sha256": "18834a0146750f4f4509b3498a4dc67a20aefdd16d12bdd50ac73702fe51d3f2",
+      "bytes": 903
+    },
+    {
+      "path": "bootloader/config/menus/mac.yaml",
+      "sha256": "08981e1cd422d8a2986c0b510b58404e9735ed47cc897ef7eccd14d05909609a",
+      "bytes": 1052
+    },
+    {
+      "path": "bootloader/config/menus/pc.yaml",
+      "sha256": "0758995ba7af6efc677ac2d3b96d57799e961ce0f70abdd59f1b575fda284b4b",
+      "bytes": 1033
+    },
+    {
+      "path": "bootloader/config/themes/teletext.yaml",
+      "sha256": "12d67ef47709530f4ca9a3c88b58312b66f20588a6992589152bb0eaefd18b23",
+      "bytes": 1942
+    },
+    {
+      "path": "bootloader/include/detect.h",
+      "sha256": "8d03c9761b7a752c229b918c7d7eff32b34154f833e8c7c7dfa60d57c2ea26c8",
+      "bytes": 4154
+    },
+    {
+      "path": "bootloader/include/menu.h",
+      "sha256": "65ceab6cefcd8ac77dcf7aff46dede356ca62a1dccea0a9369ff923173b950f7",
+      "bytes": 4146
+    },
+    {
+      "path": "bootloader/include/teletext.h",
+      "sha256": "05ba81734fc9ce641a06c07f7c0124ec7b4b8d5828009faafc3cc6926b9679e6",
+      "bytes": 5826
+    },
+    {
+      "path": "bootloader/src/chainload.c",
+      "sha256": "e26aeb0fc40801eb4ad8bfb4b9f21d2df2df9f520e73c1f8a1019ab177e4969e",
+      "bytes": 4638
+    },
+    {
+      "path": "bootloader/src/detect.c",
+      "sha256": "2306cc5cb8f74b8a25deedab4231bbba993409a12e2d0fe1dc1b1bc43babccad",
+      "bytes": 7898
+    },
+    {
+      "path": "bootloader/src/framebuffer.c",
+      "sha256": "011d9ae31c8399a415ee0847a6c06488c8c37376b72106bab706133db96df04d",
+      "bytes": 6750
+    },
+    {
+      "path": "bootloader/src/main.c",
+      "sha256": "d0968693e5cb54d8540d4af9bd4b32e8c879edcab39d74f75afbe9a55e3abbad",
+      "bytes": 8429
+    },
+    {
+      "path": "bootloader/src/menu.c",
+      "sha256": "130533970167bcfc576f41201e4b787bb0fab6b06b22b8bda7f91142e1e1dacc",
+      "bytes": 8457
+    },
+    {
+      "path": "bootloader/src/teletext.c",
+      "sha256": "8b458c703cb3ff2f714ca7bb3a1042394aa4b661dc009db954b9a59b1218a6ce",
+      "bytes": 8050
+    },
+    {
+      "path": "cli/sonic/commands/bootloader.py",
+      "sha256": "21f8a2228aa2c4a0c2eea1b8fede3cfc9814979259d5cdf06eec454a44917c4e",
+      "bytes": 4918
+    },
+    {
+      "path": "cli/sonic/commands/chasis.py",
+      "sha256": "33713a7548a662092bf6ba64b3b56b971f5e120715b47673b7982cd5c723bb29",
+      "bytes": 5802
+    },
+    {
+      "path": "cli/sonic/commands/device.py",
+      "sha256": "974deb18fd170221702439104bb953ca814886c0319407f4712f183b65863642",
+      "bytes": 7532
+    },
+    {
+      "path": "cli/sonic/commands/mesh.py",
+      "sha256": "36dc614f8635d9464982f9149498964bcbb6fd44541860efaa561d50cc20ea41",
+      "bytes": 4400
+    },
+    {
+      "path": "cli/sonic/commands/mint.py",
+      "sha256": "58bea96490bc9925d2f74cbd77b1a886d72e5c68b97fd55618c0e775b5dd03ac",
+      "bytes": 4082
+    },
+    {
+      "path": "cli/sonic/commands/security.py",
+      "sha256": "01702a7489e5d381a37461f9db8ed6d9e42f2927f4cf1dc50881545d08f536d1",
+      "bytes": 4823
+    },
+    {
+      "path": "cli/sonic/commands/usb.py",
+      "sha256": "3bc2cb599b8c04dc526737c23f90bc7f2079afdb4580d0cf34b3d1147f33c1eb",
+      "bytes": 5701
+    },
+    {
+      "path": "cli/sonic/lib/iso.py",
+      "sha256": "c43f2cad80f718dcb5b2d76a3cd15917b03783e7ba9273fb1a7289d509c1bab8",
+      "bytes": 8401
+    },
+    {
+      "path": "cli/sonic/lib/mcp_bridge.py",
+      "sha256": "721be3b3781b080b31c71347cf28e010855c810a35e967ef582aaca0d44b4550",
+      "bytes": 3214
+    },
+    {
+      "path": "cli/sonic/lib/partition.py",
+      "sha256": "a957fca06ca00808e63f9a627ef9675ce5104d975104cdce7c0d974cbc1cb116",
+      "bytes": 5657
+    },
+    {
+      "path": "cli/sonic/lib/teletext.py",
+      "sha256": "91480631a69fa4ff4bf4af1183aaeb3328f74602c684bed5dd5ce1e6eaa0f35f",
+      "bytes": 5939
+    },
+    {
+      "path": "docs/SONICSCREWDRIVER_DEV_PLAN.md",
+      "sha256": "55a02ae8bc9ac57230add5752cff621dd4eac43cf477742eb12d8f1f447df812",
+      "bytes": 7354
+    },
+    {
+      "path": "docs/USB-CREATION.md",
+      "sha256": "83226756705456fbd9e11afa9de8277de83a7cc81c41fd1661da926f5130bb30",
+      "bytes": 3426
+    },
+    {
+      "path": "docs/USX-NPM-STRUCTURE.md",
+      "sha256": "36a5d56248158d460119638a07f0cdba233f5658ebd78449b96e5b0b868632d5",
+      "bytes": 6165
+    },
+    {
+      "path": "docs/USXD-OBF-STYLE-GUIDE.md",
+      "sha256": "ad6e112828655e0a5690a51ae78139333b90762f54e47b8befedf75e83c0c9b8",
+      "bytes": 19296
+    },
+    {
+      "path": "docs/archived/classic-modern-mint-README.md",
+      "sha256": "a91ad4f7491396469855dfbd4539770cfaaac4178eb09581a4155f4a7dc29e9a",
+      "bytes": 50083
+    },
+    {
+      "path": "docs/archived/classic-modern-mint-usxd-ui-plan.md",
+      "sha256": "48236409d538fe4ecc7cd4489b1bf20b955355fe21d58e2381bd7d8984e05d13",
+      "bytes": 45188
+    },
+    {
+      "path": "docs/bootloader-status-taxonomy.md",
+      "sha256": "cb9a6f689698629384978309a99cdaa3fb199580464f024d0850f1e95cbac748",
+      "bytes": 4410
+    },
+    {
+      "path": "docs/classic-modern-mint/SETUP-GUIDE.md",
+      "sha256": "a4b3c4e4b8f8c4ae5a368f8bfead0f6042bd5e7d68a6cd8558980c2cc8c9fa65",
+      "bytes": 12245
+    },
+    {
+      "path": "docs/dev-tools-parity.md",
+      "sha256": "7e1865cc0e3f902a87fdd23b443fcaee87fd6b02b1ce1c24cb6650bd1dca52fe",
+      "bytes": 5896
+    },
+    {
+      "path": "docs/sonic-linux/README.md",
+      "sha256": "ca8053b75e0a0ed9f813989a57a0db6bb728d84108adf5e019e42610ec4bcd6a",
+      "bytes": 12531
+    },
+    {
+      "path": "docs/sonic-skill-catalog.md",
+      "sha256": "4be2ff8c84583990e4f644bb2c284e8460d6bfa37e972fd684748bc553f6b895",
+      "bytes": 7004
+    },
+    {
+      "path": "docs/usx-migration-guide.md",
+      "sha256": "6cea76c2cb1abad337bd13d023028fac23492fbdc8723aaaed27354c927ad1a5",
+      "bytes": 5137
+    },
+    {
+      "path": "docs/usx-sonic-tokens.md",
+      "sha256": "f80c686b692179039015869707a6e6c12e99b6e45f30abfe3cb2c6b3862223d6",
+      "bytes": 4238
+    },
+    {
+      "path": "interface/dashboard.html",
+      "sha256": "a3d9924de9a972122742f085f243e0cca86ef8fdb54ef4dc56cadd621e838755",
+      "bytes": 12686
+    },
+    {
+      "path": "mcp/sonic-mcp-manifest.json",
+      "sha256": "1e7b73458b04a8d39863da9140b12bbe36fe1562809cf41b43a96888ddde4317",
+      "bytes": 13157
+    },
+    {
+      "path": "mint/build-iso.sh",
+      "sha256": "85d65c283041162c97b742e412f81967c128a2cfefb2f466cfa0fb474691832e",
+      "bytes": 7792
+    },
+    {
+      "path": "mint/chroot-customize.sh",
+      "sha256": "effdeedd95814c115237caa5b1e5e83a70eb42f80eb6916b5ee7f17f1ea77fc4",
+      "bytes": 3920
+    },
+    {
+      "path": "mint/install-sonic.sh",
+      "sha256": "7e98f1fbcd36e02d89efc02f0a28e3b172434b0f9627f9ceed70f89322dbc326",
+      "bytes": 4579
+    },
+    {
+      "path": "mint/overlay/etc/skel/Desktop/README.md",
+      "sha256": "b1889aa2d1c885ceede1128119b9816810920767005b831d6667d1591aa81d9b",
+      "bytes": 895
+    },
+    {
+      "path": "mint/overlay/usr/share/backgrounds/sonic/README.md",
+      "sha256": "b467f55973eb5556bdbe4bf94c19a618430aeb5fea20b170dc830a6e861d9580",
+      "bytes": 314
+    },
+    {
+      "path": "mint/overlay/usr/share/plymouth/themes/sonic/sonic.plymouth",
+      "sha256": "36b739ace2958a66130f24a968718bf34e017bbd67232c6d12fd42f31e81c6fc",
+      "bytes": 196
+    },
+    {
+      "path": "mint/overlay/usr/share/plymouth/themes/sonic/sonic.script",
+      "sha256": "bc7594e6380a7f90936dee445781d177abfea87ccb8b6a41ebac7a7b6759d570",
+      "bytes": 1544
+    },
+    {
+      "path": "recovery/README.md",
+      "sha256": "3cef76f223ce5f3e3093ab95f4fa3a635faf8423dadde1f11cfe2946c6574fcf",
+      "bytes": 1631
+    },
+    {
+      "path": "recovery/scripts/data-recovery.sh",
+      "sha256": "db323b6465e74bbc8e5af9bd49a1cac6e6ee2eefeee0086a7c27fcaabaa1f87c",
+      "bytes": 2933
+    },
+    {
+      "path": "recovery/scripts/disk-repair.sh",
+      "sha256": "569d0e5b2a31eecb83abf9356624cf038bcef406e2f584aadaf8415c9404daf3",
+      "bytes": 2711
+    },
+    {
+      "path": "recovery/scripts/memtest.sh",
+      "sha256": "ef4a02f13bc83bd0202229279542b3081ffb19854ecaeaa06a6a40dc8cd7bc62",
+      "bytes": 1468
+    },
+    {
+      "path": "recovery/scripts/password-reset.sh",
+      "sha256": "c4cbf28b8d41a3d4c2ec861791c7d3295dacdd84ccb31d1e034042201cb481fe",
+      "bytes": 2545
+    },
+    {
+      "path": "sonic",
+      "sha256": "f711fa890a21706c2d3d38d7c8a1e2967b32ec71af9445ffc733a6cbbe31b7a3",
+      "bytes": 12818482
+    }
+  ]
+}

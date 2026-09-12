@@ -1,0 +1,22 @@
+{
+  "platform": "linux",
+  "execution_host": "bare-vm-host",
+  "observed_at": "2026-09-12T10:00:00+00:00",
+  "probes": {
+    "usb": {
+      "status": "ok",
+      "duration_ms": 2.0,
+      "output": ""
+    },
+    "pci": {
+      "status": "ok",
+      "duration_ms": 2.0,
+      "output": ""
+    },
+    "block": {
+      "status": "ok",
+      "duration_ms": 2.0,
+      "output": "{\"blockdevices\": []}"
+    }
+  }
+}

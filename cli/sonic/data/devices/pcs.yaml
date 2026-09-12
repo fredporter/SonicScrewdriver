@@ -1,0 +1,174 @@
+schema_version: 1
+devices:
+- id: macbook-pro-m1-2020
+  vendor: Apple
+  model: MacBook Pro (13-inch, M1, 2020)
+  type: laptop
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:pcs.yaml
+    revision: sha256:10540df3dec3f14ed379116ff784c1c8e911d2f5b6da9b2c406f49dcfd043501
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - usb-c
+    - thunderbolt
+    - wifi-6
+    - bluetooth-5.0
+    - apple-silicon
+    - uefi
+    cpu: Apple M1
+    ram_mb: 8192
+    storage_gb: 256
+    wifi_chip: Broadcom BCM4387
+    bluetooth: true
+    notes: First-gen Apple Silicon MacBook Pro
+  flash_eligible: false
+- id: macbook-pro-m3-2023
+  vendor: Apple
+  model: MacBook Pro (14-inch, M3 Pro, 2023)
+  type: laptop
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:pcs.yaml
+    revision: sha256:10540df3dec3f14ed379116ff784c1c8e911d2f5b6da9b2c406f49dcfd043501
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - usb-c
+    - thunderbolt-4
+    - wifi-6e
+    - bluetooth-5.3
+    - apple-silicon
+    - uefi
+    cpu: Apple M3 Pro
+    ram_mb: 18432
+    storage_gb: 512
+    wifi_chip: Broadcom BCM4389
+    bluetooth: true
+    notes: Current-gen Apple Silicon MacBook Pro
+  flash_eligible: false
+- id: mac-mini-m2-2023
+  vendor: Apple
+  model: Mac Mini (M2, 2023)
+  type: pc
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:pcs.yaml
+    revision: sha256:10540df3dec3f14ed379116ff784c1c8e911d2f5b6da9b2c406f49dcfd043501
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - usb-c
+    - thunderbolt-4
+    - wifi-6e
+    - bluetooth-5.3
+    - apple-silicon
+    - uefi
+    - hdmi
+    cpu: Apple M2
+    ram_mb: 8192
+    storage_gb: 256
+    bluetooth: true
+    notes: Compact desktop, good for Sonic Beacon
+  flash_eligible: false
+- id: thinkpad-x1-carbon-gen11
+  vendor: Lenovo
+  model: ThinkPad X1 Carbon Gen 11
+  type: laptop
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:pcs.yaml
+    revision: sha256:10540df3dec3f14ed379116ff784c1c8e911d2f5b6da9b2c406f49dcfd043501
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - usb-c
+    - thunderbolt-4
+    - wifi-6e
+    - bluetooth-5.3
+    - x86-64
+    - uefi
+    - tpm-2.0
+    cpu: Intel Core i7-1365U
+    ram_mb: 16384
+    storage_gb: 512
+    bluetooth: true
+    notes: Excellent Linux compatibility
+  flash_eligible: false
+- id: thinkpad-t480
+  vendor: Lenovo
+  model: ThinkPad T480
+  type: laptop
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:pcs.yaml
+    revision: sha256:10540df3dec3f14ed379116ff784c1c8e911d2f5b6da9b2c406f49dcfd043501
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - usb-c
+    - thunderbolt-3
+    - wifi-5
+    - bluetooth-4.2
+    - x86-64
+    - uefi
+    - tpm-2.0
+    - ethernet
+    cpu: Intel Core i5-8350U
+    ram_mb: 16384
+    storage_gb: 256
+    bluetooth: true
+    openwrt_support: false
+    notes: Popular Linux laptop, dual-battery design
+  flash_eligible: false
+- id: dell-optiplex-7080
+  vendor: Dell
+  model: OptiPlex 7080 Micro
+  type: pc
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:pcs.yaml
+    revision: sha256:10540df3dec3f14ed379116ff784c1c8e911d2f5b6da9b2c406f49dcfd043501
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - usb-c
+    - wifi-6
+    - bluetooth-5.1
+    - x86-64
+    - uefi
+    - tpm-2.0
+    - ethernet
+    - displayport
+    cpu: Intel Core i7-10700T
+    ram_mb: 16384
+    storage_gb: 512
+    bluetooth: true
+    notes: Small form factor, ideal for repurposing
+  flash_eligible: false
+- id: raspberry-pi-5
+  vendor: Raspberry Pi Foundation
+  model: Raspberry Pi 5
+  type: pc
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:pcs.yaml
+    revision: sha256:10540df3dec3f14ed379116ff784c1c8e911d2f5b6da9b2c406f49dcfd043501
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - usb-c
+    - usb-3.0
+    - wifi-5
+    - bluetooth-5.0
+    - arm64
+    - gpio
+    - uefi
+    cpu: Broadcom BCM2712 (Cortex-A76)
+    ram_mb: 8192
+    storage_gb: 0
+    bluetooth: true
+    meshcore_support: true
+    notes: Excellent for mesh networking nodes
+  flash_eligible: false

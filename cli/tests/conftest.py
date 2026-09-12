@@ -13,7 +13,7 @@ from click.testing import CliRunner
 @pytest.fixture
 def runner() -> CliRunner:
     """Click CLI test runner with mixed stderr/stdout."""
-    return CliRunner(mix_stderr=False)
+    return CliRunner()
 
 
 @pytest.fixture

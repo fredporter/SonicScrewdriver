@@ -1,0 +1,22 @@
+{
+  "platform": "linux",
+  "execution_host": "test-thinkcentre-m920q",
+  "observed_at": "2026-09-12T10:00:00+00:00",
+  "probes": {
+    "usb": {
+      "status": "ok",
+      "duration_ms": 4.2,
+      "output": "Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub\nBus 001 Device 002: ID 046d:c52b Logitech, Inc. Unifying Receiver\nBus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub"
+    },
+    "pci": {
+      "status": "ok",
+      "duration_ms": 8.5,
+      "output": "Slot:\t00:00.0\nClass:\tHost bridge [0600]\nVendor:\tIntel Corporation [8086]\nDevice:\t8th Gen Core Processor Host Bridge/DRAM Registers [3ec2]\nSVendor:\tLenovo [17aa]\nSDevice:\tDevice [312d]\n\nSlot:\t00:1f.6\nClass:\tEthernet controller [0200]\nVendor:\tIntel Corporation [8086]\nDevice:\tEthernet Connection (7) I219-LM [15bb]\nSVendor:\tLenovo [17aa]\nSDevice:\tDevice [312d]"
+    },
+    "block": {
+      "status": "ok",
+      "duration_ms": 12.1,
+      "output": "{\"blockdevices\": [{\"name\": \"nvme0n1\", \"size\": 256060514304, \"type\": \"disk\", \"mountpoint\": null, \"model\": \"SAMSUNG MZVLB256HAHQ-000L7\", \"serial\": \"REDACTED_SERIAL\", \"tran\": \"nvme\", \"children\": [{\"name\": \"nvme0n1p1\", \"size\": 536870912, \"type\": \"part\", \"mountpoint\": \"/boot/efi\", \"model\": null, \"serial\": null, \"tran\": null}, {\"name\": \"nvme0n1p2\", \"size\": 255522586624, \"type\": \"part\", \"mountpoint\": \"/\", \"model\": null, \"serial\": null, \"tran\": null}]}]}"
+    }
+  }
+}

@@ -1,0 +1,194 @@
+schema_version: 1
+devices:
+- id: tp-link-archer-c7
+  vendor: TP-Link
+  model: Archer C7 AC1750
+  type: router
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:routers.yaml
+    revision: sha256:97f191fab926d28aec03c36f073252651143b3c45e90d813a41248d3deedc8ca
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - wifi-5
+    - gigabit-ethernet
+    - usb-2.0
+    - openwrt
+    cpu: Qualcomm Atheros QCA9558
+    ram_mb: 128
+    storage_gb: 16
+    wifi_chip: Qualcomm Atheros QCA9880
+    openwrt_support: true
+    meshcore_support: true
+    ewaste_category: reusable
+    notes: Most popular OpenWrt router, excellent for Sonic Beacon
+  flash_eligible: false
+- id: tp-link-archer-a7
+  vendor: TP-Link
+  model: Archer A7 AC1750
+  type: router
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:routers.yaml
+    revision: sha256:97f191fab926d28aec03c36f073252651143b3c45e90d813a41248d3deedc8ca
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - wifi-5
+    - gigabit-ethernet
+    - usb-2.0
+    - openwrt
+    cpu: Qualcomm Atheros QCA9563
+    ram_mb: 128
+    storage_gb: 16
+    wifi_chip: Qualcomm Atheros QCA9882
+    openwrt_support: true
+    meshcore_support: true
+    ewaste_category: reusable
+    notes: Budget-friendly OpenWrt router
+  flash_eligible: false
+- id: tp-link-archer-c6
+  vendor: TP-Link
+  model: Archer C6 AC1200
+  type: router
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:routers.yaml
+    revision: sha256:97f191fab926d28aec03c36f073252651143b3c45e90d813a41248d3deedc8ca
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - wifi-5
+    - gigabit-ethernet
+    - openwrt
+    cpu: MediaTek MT7621
+    ram_mb: 128
+    storage_gb: 16
+    wifi_chip: MediaTek MT7603 + MT7613
+    openwrt_support: true
+    meshcore_support: true
+    ewaste_category: reusable
+    notes: Good entry-level OpenWrt router
+  flash_eligible: false
+- id: netgear-r7800
+  vendor: Netgear
+  model: Nighthawk X4S R7800
+  type: router
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:routers.yaml
+    revision: sha256:97f191fab926d28aec03c36f073252651143b3c45e90d813a41248d3deedc8ca
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - wifi-5
+    - gigabit-ethernet
+    - usb-3.0
+    - openwrt
+    cpu: Qualcomm IPQ8065
+    ram_mb: 512
+    storage_gb: 128
+    wifi_chip: Qualcomm Atheros QCA9984
+    openwrt_support: true
+    meshcore_support: true
+    ewaste_category: reusable
+    notes: High-performance OpenWrt router
+  flash_eligible: false
+- id: linksys-wrt3200acm
+  vendor: Linksys
+  model: WRT3200ACM
+  type: router
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:routers.yaml
+    revision: sha256:97f191fab926d28aec03c36f073252651143b3c45e90d813a41248d3deedc8ca
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - wifi-5
+    - gigabit-ethernet
+    - usb-3.0
+    - openwrt
+    - open-source
+    cpu: Marvell Armada 385
+    ram_mb: 512
+    storage_gb: 128
+    wifi_chip: Marvell 88W8964
+    openwrt_support: true
+    meshcore_support: true
+    ewaste_category: reusable
+    notes: Open-source hardware router
+  flash_eligible: false
+- id: gl-inet-mt300n-v2
+  vendor: GL.iNet
+  model: GL-MT300N-V2 (Mango)
+  type: router
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:routers.yaml
+    revision: sha256:97f191fab926d28aec03c36f073252651143b3c45e90d813a41248d3deedc8ca
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - wifi-4
+    - ethernet
+    - usb-2.0
+    - openwrt
+    - portable
+    cpu: MediaTek MT7628
+    ram_mb: 128
+    storage_gb: 16
+    wifi_chip: MediaTek MT7628
+    openwrt_support: true
+    meshcore_support: true
+    ewaste_category: reusable
+    notes: Tiny travel router, great for mesh nodes
+  flash_eligible: false
+- id: gl-inet-b1300
+  vendor: GL.iNet
+  model: GL-B1300 (Shadow)
+  type: router
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:routers.yaml
+    revision: sha256:97f191fab926d28aec03c36f073252651143b3c45e90d813a41248d3deedc8ca
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - wifi-5
+    - gigabit-ethernet
+    - usb-3.0
+    - openwrt
+    - mesh
+    cpu: Qualcomm IPQ4029
+    ram_mb: 512
+    storage_gb: 32
+    wifi_chip: Qualcomm QCA9984
+    openwrt_support: true
+    meshcore_support: true
+    ewaste_category: reusable
+    notes: Pre-flashed with OpenWrt, mesh-ready
+  flash_eligible: false
+- id: ubiquiti-edgerouter-x
+  vendor: Ubiquiti
+  model: EdgeRouter X
+  type: router
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:routers.yaml
+    revision: sha256:97f191fab926d28aec03c36f073252651143b3c45e90d813a41248d3deedc8ca
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - gigabit-ethernet
+    - openwrt
+    - poe
+    cpu: MediaTek MT7621
+    ram_mb: 256
+    storage_gb: 256
+    openwrt_support: true
+    meshcore_support: true
+    ewaste_category: reusable
+    notes: Wired router, excellent for Sonic Beacon backbone
+  flash_eligible: false

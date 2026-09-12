@@ -77,7 +77,7 @@ def test_diagnostics_summary(temp_spool: Path) -> None:
     emit("sonic.bootloader", "test error", EventLevel.ERROR,
          tags=["test", "error"])
 
-    runner = CliRunner(mix_stderr=False)
+    runner = CliRunner()
     result = runner.invoke(cli, ["diagnostics", "summary", "--limit", "10"])
     assert result.exit_code == 0
     # Should mention the 2 events
@@ -88,7 +88,7 @@ def test_diagnostics_health(temp_spool: Path) -> None:
     """sonic diagnostics health returns passing checks."""
     from sonic.cli import cli
 
-    runner = CliRunner(mix_stderr=False)
+    runner = CliRunner()
     result = runner.invoke(cli, ["diagnostics", "health"])
     assert result.exit_code == 0
     assert "Spool Directory" in result.output

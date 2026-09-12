@@ -1,85 +1,25 @@
-# Binaries
-/bin/
-/*.exe
-/*.exe~
-/*.dll
-/*.so
-/*.dylib
-/modules/sonic-home/bin/
-/modules/sonic-express/bin/
-
-# Test binary
-*.test
-
-# Output of go coverage
-*.out
+# Local/generated files only; never ignore the Python package by basename.
+/sonic
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+.coverage
 coverage/
-coverage.*
-*.coverprofile
-
-# Dependency directories
-vendor/
-
-# Go workspace file
-go.work.sum
-
-# IDE
-.idea/
-.vscode/
-.cursor/
-*.swp
-*.swo
-
-# OS
 .DS_Store
-Thumbs.db
-
-# Env and local config
 .env
 .env.*
 !.env.example
-*.local
-
-# Runtime, local state, and cache
-/runtime/
-/run/
-/state/
-/data/
-/cache/
-.cache/
-*.pid
-*.sock
-*.db
-*.db-*
-*.sqlite
-*.sqlite3
 *.log
-logs/
-
-# Sonic family local artifacts
-dist/
-bundles/
-artifacts/
-*.she
-*.sig
-manifest.dryrun.json
-
-# Local tool/user directories inside repo
-.local/
-.config/
-
-# Cursor/local workflow artifacts
-agent-transcripts/
-*.tmp
-
-# Temp
-/tmp/
-/temp/
-tmp/
-temp/
-
-# Built binary
-/sonic
-sonic-bin
-sonic
-__pycache__/
+*.db
+*.sqlite*
+/runtime/
+/state/
+/cache/
+/artifacts/

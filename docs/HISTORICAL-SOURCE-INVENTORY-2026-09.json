@@ -1,0 +1,1140 @@
+{
+  "date": "2026-09-10",
+  "scope": "Local snapshots before authorized cleanup; presence is not implementation proof",
+  "sources": [
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/DevStudio-2026-06-21/.compost/docs/archived/global-knowledge/classic-modern-mvp/README.md",
+      "sha256": "49afe3242dd8464d48b2e45f1b502315c78a9f9e972658bd4e45dd6536eaea2d",
+      "bytes": 1688,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/DevStudio-2026-06-21/.compost/docs/archived/global-knowledge/classic-modern-mvp/docs/classic-modern-brief.md",
+      "sha256": "69243ec238390199fb88634fc47e957f7e222d684cfbf5a5215950d6eed5e515",
+      "bytes": 3902,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/DevStudio-2026-06-21/.compost/docs/archived/global-knowledge/classic-modern-mvp/docs/classic-modern-host-profile.md",
+      "sha256": "781a2165f66df45937b57d4c73a57cc2f193dedc8f973d62f535168bc3893857",
+      "bytes": 1298,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/DevStudio-2026-06-21/.compost/docs/archived/global-knowledge/classic-modern-mvp/docs/classic-modern-tokens.md",
+      "sha256": "6adc21303ae66ecf54f743ddaa39f69380e9b0bb4a3d28bb2c379dbc055aa4cc",
+      "bytes": 1871,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/DevStudio-2026-06-21/.compost/docs/archived/global-knowledge/classic-modern-mvp/docs/rebrief-instructions.md",
+      "sha256": "664544f2af6851686dcee5433050c12ca5f751e423a6aa73333f9f53a80505b2",
+      "bytes": 1063,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/DevStudio-2026-06-21/.compost/docs/archived/global-knowledge/classic-modern-mvp/docs/sonic-tui-charter.md",
+      "sha256": "a9a807c30273b216f3a7b37504c57be84c44e6d99e6e5fd19287236c98663d36",
+      "bytes": 2178,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/DevStudio-2026-06-21/.compost/docs/archived/global-knowledge/classic-modern-mvp/shell/shell-alignment.md",
+      "sha256": "6e49407c25f1d8df6aec07c4f56073efed5ca4ce4fc703b478c7987bf9f3c3cc",
+      "bytes": 890,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/DevStudio-2026-06-21/.compost/docs/archived/global-knowledge/classic-modern-mvp/themes/classic-modern.css",
+      "sha256": "1ddc473ecf254dae608835ef3d8bf5d7a190de23a504f370516400272e4d990a",
+      "bytes": 605,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/DevStudio-2026-06-21/.compost/docs/archived/global-knowledge/classic-modern-mvp/thinu/thinui-mvp-spec.md",
+      "sha256": "61460cef7a90d3cd764ddfe7f637f750e2676fe9d312a7ec10f3d2dcfc3b3b02",
+      "bytes": 1107,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/DevStudio-2026-06-21/.compost/docs/archived/global-knowledge/classic-modern-mvp/ubuntu/apply-classic-modern.sh",
+      "sha256": "a15397a029d06a570923d4aee05bc8970244913569c54fa239d67431d873ffdd",
+      "bytes": 243,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/DevStudio-2026-06-21/docs/specs/SONIC_SPEC.md",
+      "sha256": "104b2e29e2e3e314f6da4c7c22aefda27b14166d3774ee3378ed83b95b59f4c2",
+      "bytes": 3383,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/DevStudio-2026-06-21/docs/specs/UDN-SONIC-V2-001.md",
+      "sha256": "14d13df232cd5a4a464bdeb35bd6d53dbad04c8ff165fcee32f251eb5437602c",
+      "bytes": 38373,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/AUTOMATION_GUIDE.md",
+      "sha256": "90177757a343c4e006175e7e09d214cb6681d448923963dd5a640e298ed03e67",
+      "bytes": 7924,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/CONSOLIDATION_PLAN.md",
+      "sha256": "27bc9ef6db670b2fe12d48815d3be077022cd77f01886b5f0a981338e8c744a7",
+      "bytes": 16852,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/FINAL_SUMMARY.md",
+      "sha256": "f7ab88356cb10c8f1eae48f6942a0a91b2199e9eada5b333a79f036a28a059f5",
+      "bytes": 19627,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/INSTALL.sh",
+      "sha256": "2479efea5eedf2725f9caade75dc2672050b0579f0e1214dffa399f4b31de0f4",
+      "bytes": 9702,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/README.md",
+      "sha256": "cd2c732388bd804c10119b24d1ceb189796e4c7c45f60ff2ef9a1ebaafccbd58",
+      "bytes": 14175,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/RESTART_GUIDE.md",
+      "sha256": "6cdaa3b197d607d33cab91727c28099740464bbe638877700f51430304b34b2b",
+      "bytes": 12679,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/SUMMARY.md",
+      "sha256": "27e50c6816370c1536a27ac5fc7ddb9a4f81f0f1a1407a681539d3a719949ce5",
+      "bytes": 7546,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/scripts/backup-mint-settings.sh",
+      "sha256": "6b1ed9f950b97e1183498a7e69c49732dc8ab8e924df2d4ba9bdb7fef9819fe0",
+      "bytes": 11588,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/scripts/backup-obsidian.sh",
+      "sha256": "139502211321b5bb2d78cd283e6fa507d507602499d332e7a7f406d0dfddd63b",
+      "bytes": 5398,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/scripts/backup-zen-settings.sh",
+      "sha256": "38578ab1c83176e7e4894d68bdc9139744fe506c1647ba456e61d53442ac8032",
+      "bytes": 7968,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/scripts/cleanup.sh",
+      "sha256": "1c331db15ea18ba738d46f7c2bc358578ef0333cc399f3227955b7f7f5ae06f2",
+      "bytes": 3246,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/scripts/configure-icon-set.sh",
+      "sha256": "d9b023005358a05508da5cbfdb5ffb4c3ef105821e223cade253eff0012c0c05",
+      "bytes": 18838,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/scripts/configure-zen-browser.sh",
+      "sha256": "eac3d0bf709aa681d136e01f03d4fb72b10e91faf57810e3f6616bdd493ad726",
+      "bytes": 13618,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/scripts/first-run.sh",
+      "sha256": "ef8e3a2b0d397367e2b6d68c2a22b83c5b9d34fecd1b58350e61d788b22520db",
+      "bytes": 4110,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/scripts/install-obsidian.sh",
+      "sha256": "1431fd9b1df929627a90cd7ced472bdcd9547b774e359fe8b457b1e291200a7c",
+      "bytes": 21282,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/scripts/install-zen-extension.sh",
+      "sha256": "38593fa9a8006fe95b51ecca280c51dc818b97f7d8131d7acd3156d4716d7f11",
+      "bytes": 8681,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/scripts/restore-mint-settings.sh",
+      "sha256": "4a355223d8a6a069581298e9b38562a3f778c891398abc4c612068e0c51d23dd",
+      "bytes": 5358,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/scripts/restore-obsidian.sh",
+      "sha256": "79810f93cf7db0499a790c006d2aa4892b4f98bf567fc4da0d93d26782a72b05",
+      "bytes": 2961,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/src/config/icons/icon-sets.json",
+      "sha256": "b4ea120628a64d76b0de413c5e3f231f2f167059c8d5ddaea9e407bc95c5c828",
+      "bytes": 5665,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/src/config/icons/selections/active.json",
+      "sha256": "f84ef7055cfd1561a612531ee109cc7393edd597dd7d4a7f1139fcd28bdd1f59",
+      "bytes": 318,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/src/obsidian/README.md",
+      "sha256": "5a7cb3464b97b9d671720620c02d7612e67a9633ec15dddd54306e44e3a5d315",
+      "bytes": 11802,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/src/obsidian/config.json",
+      "sha256": "49596b7203a50d7e6e7e4b671e8be4e2f87b1f12c429eed77917b2851d811f93",
+      "bytes": 6453,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/src/obsidian/plugins/essential.json",
+      "sha256": "8aa82e4a2b93178c0bdbbdb0e0964e76340f40ae7d0d64553ec5a006fd679fd3",
+      "bytes": 6222,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/src/obsidian/scripts/md-file-handler.sh",
+      "sha256": "6d13456e255a1fb0fae478a0f3c6fc1ac044de6919ffde22aa9896ae1736b612",
+      "bytes": 5219,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/src/obsidian/scripts/sync-zen-udos.sh",
+      "sha256": "2a2d6b79247e5d39976709c9e327bc41503cb9e0b4d8b92ed6f35e496dc3cc95",
+      "bytes": 5884,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/src/obsidian/snippets/cmmint-colors.css",
+      "sha256": "c0d79f711c268a2cc74679ec1d8f81f5bebf027bf2121781758d21b866540b20",
+      "bytes": 6285,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/src/obsidian/snippets/diamond-theme.css",
+      "sha256": "f2a9cedc2b31bfe2fba54106a8662ffd0704b228c591931e19413e9a0e0af44b",
+      "bytes": 3012,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/vaults/Zen/.obsidian/app.json",
+      "sha256": "e4e793d6146fd2e446253255acfcc5d3da350466fd2cc437484e737f2fdcb3f2",
+      "bytes": 113,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/vaults/Zen/Notes/test-sync.md",
+      "sha256": "73213ddfefdb110b1218f12fb39bafd085d666614ac54e32d8b8d2ae80117839",
+      "bytes": 21,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/vaults/Zen/Notes/uDos/Zen/test-sync.md",
+      "sha256": "73213ddfefdb110b1218f12fb39bafd085d666614ac54e32d8b8d2ae80117839",
+      "bytes": 21,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/vaults/Zen/Templates/Daily Note.md",
+      "sha256": "14095859760126a30cc6e0cc4b152509fa9ac4d80d675689156bd431a979dfd6",
+      "bytes": 148,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/cmmint/vaults/Zen/Templates/Default Note.md",
+      "sha256": "8f2a98f8b0e3489ad8fa9380d52547a3a02396c733a57a7681adb6aa0c4eed7c",
+      "bytes": 97,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/sonic-screwdriver/__init__.py",
+      "sha256": "aa4a50a7c98982dd27894297624bfd2e18fea4147c6e2960c2b0cc5923e20bce",
+      "bytes": 640,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/sonic-screwdriver/server.py",
+      "sha256": "8794fa0532d7f983f41cea1999b779e83bdd9f845ef410380ddecf16e45392e6",
+      "bytes": 6358,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/sonic-screwdriver/sonic_screwdriver/__init__.py",
+      "sha256": "0daecc99cdd8791f5a1b4cfe12e19dac365848176b89da340b48656a005ce04d",
+      "bytes": 155,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/sonic-screwdriver/sonic_screwdriver/commands/__init__.py",
+      "sha256": "a62acdf0fac1f20855bc071b1e94eb33bebf42759edc70b77241b8ba0b64c0e8",
+      "bytes": 34,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/sonic-screwdriver/sonic_screwdriver/commands/device.py",
+      "sha256": "a87cb63631801016baf23f63a990866c3b2a152c38639c695ea0c60b381fd2b2",
+      "bytes": 6855,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/sonic-screwdriver/sonic_screwdriver/commands/drivers.py",
+      "sha256": "53dc07ea848dbd14ca4e6e326d241e0ca83c11a63793fd6c5425720da84ba2d2",
+      "bytes": 5457,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/sonic-screwdriver/sonic_screwdriver/commands/library.py",
+      "sha256": "7a228ec6a92468ba42259adfe0dfe041c0e7cd4ec20d03d7a2bac2bda57add00",
+      "bytes": 7611,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/sonic-screwdriver/sonic_screwdriver/commands/recover.py",
+      "sha256": "c6856b2965cf2e5e89952cab18b7f54ebc04e765d8bf5582694c664d265fa06d",
+      "bytes": 5667,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/sonic-screwdriver/sonic_screwdriver/commands/usb.py",
+      "sha256": "2e3bce92825f2130646de2520955bb328a3d0187de8e931f6c1a1dcc7a2a23fc",
+      "bytes": 7212,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/ARCHIVED/uServer-2026-06-21/sonic-screwdriver/sonic_screwdriver/main.py",
+      "sha256": "81c60ced40f82ec4457ac97e2f5bd6ccc80e0147851a57c262dc1dd46a754d83",
+      "bytes": 3405,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/HomeNest/src/uhome_server/installer/__init__.py",
+      "sha256": "aab77f9e7c942a47e5020622cd9df9d178966fb1c96e0ed636c7f8610f5e8c39",
+      "bytes": 2799,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/HomeNest/src/uhome_server/installer/bundle.py",
+      "sha256": "66736e5fed41f4856ebaebd07af8daf20f6f584c3d781c73a5fd6909aeebcee3",
+      "bytes": 5455,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/HomeNest/src/uhome_server/installer/executor.py",
+      "sha256": "0c2a067e57b26563aaafa693dff793e9c99dcd7f47f97251f8c37e8dd10789a6",
+      "bytes": 8171,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/HomeNest/src/uhome_server/installer/health.py",
+      "sha256": "7cfc076b456fd9d8ac67829558291792c297e021cb8199686aeccd3225b27567",
+      "bytes": 3099,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/HomeNest/src/uhome_server/installer/linux_assets.py",
+      "sha256": "c5092f9497e75dffa187050ef26d0171049cf1bc180c745291f8f8f9b20d72d5",
+      "bytes": 6912,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/HomeNest/src/uhome_server/installer/live_apply.py",
+      "sha256": "7e79a9c2242dd67a19013b72617e5bfb22e482ddf4a4e88d8bb7c685695b49e3",
+      "bytes": 2646,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/HomeNest/src/uhome_server/installer/plan.py",
+      "sha256": "5946e46861550aa96592b6cd7df92ccc31c6bbdf7c7b422e1721fbb7b1d72d69",
+      "bytes": 11030,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/HomeNest/src/uhome_server/installer/preflight.py",
+      "sha256": "e994ca641797044ce132df44ff4e079352e03658e9cf5cce8a91bd5e5487c01c",
+      "bytes": 11312,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/HomeNest/src/uhome_server/installer/prerequisites.py",
+      "sha256": "eb680ee65c7166ce17c6b9772ac1eabd250958d27a45768343fbc07fb872c203",
+      "bytes": 6005,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/HomeNest/src/uhome_server/installer/promotion.py",
+      "sha256": "a7ecd4d1cc73f7cccea423a382007cd01ef27df797a3a6f08061976133ed2295",
+      "bytes": 17312,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/HomeNest/src/uhome_server/installer/service_manifest.py",
+      "sha256": "38dcb4832b95ad639fdef4786bdf25cd06509c7fa049af9705177db4163dc3ae",
+      "bytes": 2624,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/HomeNest/src/uhome_server/installer/staging.py",
+      "sha256": "ffd9fdcc4e810323cf2ab2e0b29842a3cf88327d7c4857f8eca685bb00c0dd87",
+      "bytes": 11423,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/.github/workflows/release.yaml",
+      "sha256": "5a77d8f72c304bcf87ce3c345b7acb749cfe7d6f7cbec36b2b059efbf4acce80",
+      "bytes": 407,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/.gitmodules",
+      "sha256": "4bc51f509cccb7e6da0f78cafc8ba8f0b848fb9e86d4660ab2b9f4f02f4eabde",
+      "bytes": 48,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/.tasker.dev-flow.yaml",
+      "sha256": "bdd18cdc120ae7925e7906933a0b795d77784314502384f66cf5249bf0a43cf7",
+      "bytes": 9167,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/README.md",
+      "sha256": "e55d1ed4a000d7c4e14fa4fa0303d5f62f0fa42a119d853a0cf4db18810ce523",
+      "bytes": 5411,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/ROADMAP.md",
+      "sha256": "f4ffc0e510b5c5ba0bf0f7e9e4044c1e0186fa2f500dc8ebba5269436ec11510",
+      "bytes": 4776,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/bootloader/Makefile",
+      "sha256": "93a829fd55d2a315d0b666fa8d3a646f88665ec7b13dc9d68408aaf5b64b88cb",
+      "bytes": 4002,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/bootloader/config/menus/bios.yaml",
+      "sha256": "18834a0146750f4f4509b3498a4dc67a20aefdd16d12bdd50ac73702fe51d3f2",
+      "bytes": 903,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/bootloader/config/menus/mac.yaml",
+      "sha256": "08981e1cd422d8a2986c0b510b58404e9735ed47cc897ef7eccd14d05909609a",
+      "bytes": 1052,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/bootloader/config/menus/pc.yaml",
+      "sha256": "0758995ba7af6efc677ac2d3b96d57799e961ce0f70abdd59f1b575fda284b4b",
+      "bytes": 1033,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/bootloader/config/themes/teletext.yaml",
+      "sha256": "12d67ef47709530f4ca9a3c88b58312b66f20588a6992589152bb0eaefd18b23",
+      "bytes": 1942,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/bootloader/include/detect.h",
+      "sha256": "8d03c9761b7a752c229b918c7d7eff32b34154f833e8c7c7dfa60d57c2ea26c8",
+      "bytes": 4154,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/bootloader/include/menu.h",
+      "sha256": "65ceab6cefcd8ac77dcf7aff46dede356ca62a1dccea0a9369ff923173b950f7",
+      "bytes": 4146,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/bootloader/include/teletext.h",
+      "sha256": "05ba81734fc9ce641a06c07f7c0124ec7b4b8d5828009faafc3cc6926b9679e6",
+      "bytes": 5826,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/bootloader/src/chainload.c",
+      "sha256": "e26aeb0fc40801eb4ad8bfb4b9f21d2df2df9f520e73c1f8a1019ab177e4969e",
+      "bytes": 4638,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/bootloader/src/detect.c",
+      "sha256": "2306cc5cb8f74b8a25deedab4231bbba993409a12e2d0fe1dc1b1bc43babccad",
+      "bytes": 7898,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/bootloader/src/framebuffer.c",
+      "sha256": "011d9ae31c8399a415ee0847a6c06488c8c37376b72106bab706133db96df04d",
+      "bytes": 6750,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/bootloader/src/main.c",
+      "sha256": "d0968693e5cb54d8540d4af9bd4b32e8c879edcab39d74f75afbe9a55e3abbad",
+      "bytes": 8429,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/bootloader/src/menu.c",
+      "sha256": "130533970167bcfc576f41201e4b787bb0fab6b06b22b8bda7f91142e1e1dacc",
+      "bytes": 8457,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/bootloader/src/teletext.c",
+      "sha256": "8b458c703cb3ff2f714ca7bb3a1042394aa4b661dc009db954b9a59b1218a6ce",
+      "bytes": 8050,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/__init__.py",
+      "sha256": "182137fb7ed92b896b6249c0276305bd050e80538961fbf4232b1ac007abc9b0",
+      "bytes": 118,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/cli.py",
+      "sha256": "be42886aba3cdec76f43732b95c10111c04a19c546cc9d13d89f031975e1b821",
+      "bytes": 1768,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/commands/__init__.py",
+      "sha256": "f914c36ead4d248c5a677fa664b69035d6155bffe38252da75fe75c4bded5f2b",
+      "bytes": 44,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/commands/bootloader.py",
+      "sha256": "21f8a2228aa2c4a0c2eea1b8fede3cfc9814979259d5cdf06eec454a44917c4e",
+      "bytes": 4918,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/commands/chasis.py",
+      "sha256": "33713a7548a662092bf6ba64b3b56b971f5e120715b47673b7982cd5c723bb29",
+      "bytes": 5802,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/commands/device.py",
+      "sha256": "974deb18fd170221702439104bb953ca814886c0319407f4712f183b65863642",
+      "bytes": 7532,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/commands/diagnostics.py",
+      "sha256": "9cf674d144686e1ca2482b792bc01eaf355c2adf597254f38165eeae821bd3bf",
+      "bytes": 5127,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/commands/mesh.py",
+      "sha256": "36dc614f8635d9464982f9149498964bcbb6fd44541860efaa561d50cc20ea41",
+      "bytes": 4400,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/commands/mint.py",
+      "sha256": "58bea96490bc9925d2f74cbd77b1a886d72e5c68b97fd55618c0e775b5dd03ac",
+      "bytes": 4082,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/commands/security.py",
+      "sha256": "01702a7489e5d381a37461f9db8ed6d9e42f2927f4cf1dc50881545d08f536d1",
+      "bytes": 4823,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/commands/usb.py",
+      "sha256": "3bc2cb599b8c04dc526737c23f90bc7f2079afdb4580d0cf34b3d1147f33c1eb",
+      "bytes": 5701,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/data/devices/esp32.yaml",
+      "sha256": "308cc25cac8403ed607075b3e876b9937cfc1a8411972385fa9c34e18210ec40",
+      "bytes": 3061,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/data/devices/pcs.yaml",
+      "sha256": "10540df3dec3f14ed379116ff784c1c8e911d2f5b6da9b2c406f49dcfd043501",
+      "bytes": 2742,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/data/devices/routers.yaml",
+      "sha256": "97f191fab926d28aec03c36f073252651143b3c45e90d813a41248d3deedc8ca",
+      "bytes": 3334,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/lib/__init__.py",
+      "sha256": "b194e9e192bae7725659887c89d8f7d9978e8bef31ab6801b1a6af51fbbc7a65",
+      "bytes": 40,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/lib/device_db.py",
+      "sha256": "ae31a30e4340161ca29676eb1cc16158ffc76e4f03a80a2098a1ab187a5b2f9f",
+      "bytes": 2976,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/lib/device_scanner.py",
+      "sha256": "1e7070c991d6ba5417e5a2af2228187d482f7e45c240eba444152e6b5fb23a83",
+      "bytes": 4830,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/lib/envelope.py",
+      "sha256": "964c12b82f708281f4f993aa82840167b3d9c1fae1f8de24463938fe99d79895",
+      "bytes": 3506,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/lib/iso.py",
+      "sha256": "c43f2cad80f718dcb5b2d76a3cd15917b03783e7ba9273fb1a7289d509c1bab8",
+      "bytes": 8401,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/lib/mcp_bridge.py",
+      "sha256": "721be3b3781b080b31c71347cf28e010855c810a35e967ef582aaca0d44b4550",
+      "bytes": 3214,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/lib/partition.py",
+      "sha256": "a957fca06ca00808e63f9a627ef9675ce5104d975104cdce7c0d974cbc1cb116",
+      "bytes": 5657,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/lib/spool.py",
+      "sha256": "4435e441183aaf2f01a319614397cdab40755923819610f4dfa6a8c3555b387e",
+      "bytes": 1772,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/lib/teletext.py",
+      "sha256": "91480631a69fa4ff4bf4af1183aaeb3328f74602c684bed5dd5ce1e6eaa0f35f",
+      "bytes": 5939,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/cli/sonic/lib/usx_theme.py",
+      "sha256": "d033392ef0058e135216af8a95d93550bcbfa862d6f1df115fb1a3c4874e80b1",
+      "bytes": 2240,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/docs/HISTORICAL-RECONCILIATION-2026-09.md",
+      "sha256": "ced5418f6bf9279b219f63827583982e98bc9ee25d11a434d4b2c117e705dde9",
+      "bytes": 18078,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/docs/REVIVAL-PLAN-2026-09.md",
+      "sha256": "da88c1d02ad78d1d21d6bc5770233377e9247d711ad7c7010d15be2dded40cab",
+      "bytes": 33851,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/docs/SONICSCREWDRIVER_DEV_PLAN.md",
+      "sha256": "55a02ae8bc9ac57230add5752cff621dd4eac43cf477742eb12d8f1f447df812",
+      "bytes": 7354,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/docs/USB-CREATION.md",
+      "sha256": "83226756705456fbd9e11afa9de8277de83a7cc81c41fd1661da926f5130bb30",
+      "bytes": 3426,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/docs/USX-NPM-STRUCTURE.md",
+      "sha256": "36a5d56248158d460119638a07f0cdba233f5658ebd78449b96e5b0b868632d5",
+      "bytes": 6165,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/docs/USXD-OBF-STYLE-GUIDE.md",
+      "sha256": "ad6e112828655e0a5690a51ae78139333b90762f54e47b8befedf75e83c0c9b8",
+      "bytes": 19296,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/docs/archived/classic-modern-mint-README.md",
+      "sha256": "a91ad4f7491396469855dfbd4539770cfaaac4178eb09581a4155f4a7dc29e9a",
+      "bytes": 50083,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/docs/archived/classic-modern-mint-usxd-ui-plan.md",
+      "sha256": "48236409d538fe4ecc7cd4489b1bf20b955355fe21d58e2381bd7d8984e05d13",
+      "bytes": 45188,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/docs/bootloader-status-taxonomy.md",
+      "sha256": "cb9a6f689698629384978309a99cdaa3fb199580464f024d0850f1e95cbac748",
+      "bytes": 4410,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/docs/classic-modern-mint/SETUP-GUIDE.md",
+      "sha256": "a4b3c4e4b8f8c4ae5a368f8bfead0f6042bd5e7d68a6cd8558980c2cc8c9fa65",
+      "bytes": 12245,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/docs/dev-tools-parity.md",
+      "sha256": "7e1865cc0e3f902a87fdd23b443fcaee87fd6b02b1ce1c24cb6650bd1dca52fe",
+      "bytes": 5896,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/docs/sonic-linux/README.md",
+      "sha256": "ca8053b75e0a0ed9f813989a57a0db6bb728d84108adf5e019e42610ec4bcd6a",
+      "bytes": 12531,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/docs/sonic-skill-catalog.md",
+      "sha256": "4be2ff8c84583990e4f644bb2c284e8460d6bfa37e972fd684748bc553f6b895",
+      "bytes": 7004,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/docs/usx-migration-guide.md",
+      "sha256": "6cea76c2cb1abad337bd13d023028fac23492fbdc8723aaaed27354c927ad1a5",
+      "bytes": 5137,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/docs/usx-sonic-tokens.md",
+      "sha256": "f80c686b692179039015869707a6e6c12e99b6e45f30abfe3cb2c6b3862223d6",
+      "bytes": 4238,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/interface/dashboard.html",
+      "sha256": "a3d9924de9a972122742f085f243e0cca86ef8fdb54ef4dc56cadd621e838755",
+      "bytes": 12686,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/mcp/sonic-mcp-manifest.json",
+      "sha256": "1e7b73458b04a8d39863da9140b12bbe36fe1562809cf41b43a96888ddde4317",
+      "bytes": 13157,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/mint/build-iso.sh",
+      "sha256": "85d65c283041162c97b742e412f81967c128a2cfefb2f466cfa0fb474691832e",
+      "bytes": 7792,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/mint/chroot-customize.sh",
+      "sha256": "effdeedd95814c115237caa5b1e5e83a70eb42f80eb6916b5ee7f17f1ea77fc4",
+      "bytes": 3920,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/mint/install-sonic.sh",
+      "sha256": "7e98f1fbcd36e02d89efc02f0a28e3b172434b0f9627f9ceed70f89322dbc326",
+      "bytes": 4579,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/mint/overlay/etc/skel/Desktop/README.md",
+      "sha256": "b1889aa2d1c885ceede1128119b9816810920767005b831d6667d1591aa81d9b",
+      "bytes": 895,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/mint/overlay/usr/share/backgrounds/sonic/README.md",
+      "sha256": "b467f55973eb5556bdbe4bf94c19a618430aeb5fea20b170dc830a6e861d9580",
+      "bytes": 314,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/mint/overlay/usr/share/plymouth/themes/sonic/sonic.plymouth",
+      "sha256": "36b739ace2958a66130f24a968718bf34e017bbd67232c6d12fd42f31e81c6fc",
+      "bytes": 196,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/mint/overlay/usr/share/plymouth/themes/sonic/sonic.script",
+      "sha256": "bc7594e6380a7f90936dee445781d177abfea87ccb8b6a41ebac7a7b6759d570",
+      "bytes": 1544,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/recovery/README.md",
+      "sha256": "3cef76f223ce5f3e3093ab95f4fa3a635faf8423dadde1f11cfe2946c6574fcf",
+      "bytes": 1631,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/recovery/scripts/data-recovery.sh",
+      "sha256": "db323b6465e74bbc8e5af9bd49a1cac6e6ee2eefeee0086a7c27fcaabaa1f87c",
+      "bytes": 2933,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/recovery/scripts/disk-repair.sh",
+      "sha256": "569d0e5b2a31eecb83abf9356624cf038bcef406e2f584aadaf8415c9404daf3",
+      "bytes": 2711,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/recovery/scripts/memtest.sh",
+      "sha256": "ef4a02f13bc83bd0202229279542b3081ffb19854ecaeaa06a6a40dc8cd7bc62",
+      "bytes": 1468,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/SonicScrewdriver/recovery/scripts/password-reset.sh",
+      "sha256": "c4cbf28b8d41a3d4c2ec861791c7d3295dacdd84ccb31d1e034042201cb481fe",
+      "bytes": 2545,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/uCode/scripts/probe_capsule_runtime.py",
+      "sha256": "fba4d8b541a2ea7fd6364195e0c129f2257d0afdc8ddc7140b8dc5f41c668be7",
+      "bytes": 4835,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/uCore/docs/DISTRIBUTION_AND_SONIC_PATHWAY.md",
+      "sha256": "93dd36f1d76745597a98603019b196fa7cdf9c72cdb83b6f9dc792d96194a860",
+      "bytes": 8184,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "path": "/Users/fredbook/Code/uCore/docs/ECOSYSTEM_SPEC_INVENTORY.md",
+      "sha256": "797f024a556a364aef3fa41759e458b786c0b2e5805764af5734f8cd9daa2845",
+      "bytes": 5268,
+      "review": "source indexed; concept decisions and inspected behavior in reconciliation register"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "cmd/sonic/main.go",
+      "sha256": "b31f75071a8a46491f208a901ae5159ea900c007b25a3842d5f6b86c8a812980",
+      "bytes": 27844,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "docs/USXD-OBF-STYLE-GUIDE.md",
+      "sha256": "82a0c079eaf81f1acf879da28e15031540ce899dc2565cda79e9bc2cc50a27ca",
+      "bytes": 18989,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "docs/classic-modern-mint/README.md",
+      "sha256": "29e8d5177edb88c581d4ead9652f683f0343eb7d77a38115a6319cf20701aef8",
+      "bytes": 49880,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "docs/classic-modern-mint/SETUP-GUIDE.md",
+      "sha256": "586ec752dad8d95383c580755818508392c84e5aa6fc38e6bc38f431d9c941b1",
+      "bytes": 11909,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "docs/classic-modern-mint/spec-sheet.md",
+      "sha256": "f7f17ffca5ae39d93d34d4008eb8708a3f104ba3cb0b0c1c9f2638ec6cfdd5ea",
+      "bytes": 21069,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "docs/classic-modern-mint/usxd-ui-plan.md",
+      "sha256": "628807bd794888d5b04b366efc39f8d1e9f050615430beb930ac48246b3c7037",
+      "bytes": 44982,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "docs/sonic-linux/README.md",
+      "sha256": "771d25f2d99dd7bf0470d6c89438f67cf9fa2413baab68417b080fa7accb4ba2",
+      "bytes": 16040,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "docs/sonic-linux/sonic-udos-uhome.md",
+      "sha256": "d0df6f02f484072da6db25fade4df4385eb3c23e067771cb8d9ff33564c257ae",
+      "bytes": 32846,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/catalogue/catalogue.go",
+      "sha256": "dc087dfe462e009da1e9f87452084265e75df75670d20d6ce96e8e0718e36859",
+      "bytes": 5248,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/classicmodern/readiness.go",
+      "sha256": "c6c519f151b4e0e76e27b03732ecd04cd41412db70b06df4489e49639c0629ce",
+      "bytes": 11355,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/container/docker.go",
+      "sha256": "a5cdb421b5cf5e2e469d1406ba538074de6249eafaeba13076684a64c4cce441",
+      "bytes": 5752,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/container/health.go",
+      "sha256": "c16ba4299e274ba498d82c04eb9467218ed26d8010b9cab0ef27dc7bf19bcb5d",
+      "bytes": 5814,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/container/health_simple_test.go",
+      "sha256": "5fba896130dde1821537867276e39e358ed9fd5d41e2c3265d55595bed39d63b",
+      "bytes": 3904,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/container/runtime.go",
+      "sha256": "f81f4c49ff430918cf5b1cfa25e5079515faf846440e1eadb7bf7c3c8407ed23",
+      "bytes": 552,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/disk/disk.go",
+      "sha256": "783e33ae96aa3748027c58a7cdda61c3eb07e624ec7b162e324d7b5efdc92c3f",
+      "bytes": 9273,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/disk/disk_test.go",
+      "sha256": "0b8abe2ee86829b7fd5c8b5ec571eb6df05018fe379186494e5e8921f0aad798",
+      "bytes": 3232,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/driver/driver.go",
+      "sha256": "818532d680015c92bedf10fbcef6e2edfa585a7f7283f63e74d777a95f678e76",
+      "bytes": 11885,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/gui/gui.go",
+      "sha256": "1af2b369381853f6387476a45d45f7457d685dd6be342d0fd6ba89f40282f107",
+      "bytes": 7946,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/gui/static/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/iso/downloader.go",
+      "sha256": "4d418d2fc37b53f8d8e04c656fbaf517c5bc728090f86000eba12757133297d2",
+      "bytes": 5738,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/iso/downloader_test.go",
+      "sha256": "ca18bdc4271ae2427ea9ce8f82114b225424641b99a6b3f712d96d954a2bc3b8",
+      "bytes": 3049,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/knowledge/knowledge.go",
+      "sha256": "5967015f04ea1876560d1b1dc4edaa6700933da8ff6295f7262e4a05dd39ee14",
+      "bytes": 3660,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/library/index.go",
+      "sha256": "e4d41c758bc780a70b3eeaad754abbee5078888ff79127bd390accc45b21aec4",
+      "bytes": 268,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/library/manager.go",
+      "sha256": "d1efd150e4f5a151cf4c2adbada46575357c7ad12386074af2382994aed893b9",
+      "bytes": 3235,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/library/manager_test.go",
+      "sha256": "daf42e6a2421572e0f1e98b74473a4902356db96c13a11baf8829e37402916a6",
+      "bytes": 4454,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/library/schema.go",
+      "sha256": "b0b2ab06eac23eb2f4f4520b69225bd607681634cf3b670433d0ae713e723ee8",
+      "bytes": 3060,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/recovery/recovery.go",
+      "sha256": "f594f4ecb3bf9937ea50effedb4267bcf9be3c47bfde3e6486cfe24ea24c0bef",
+      "bytes": 14422,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/reflash/reflash.go",
+      "sha256": "e3b6a3599c179465ec966e6f3cb6a9f7ffa46fce7e5a95cabf478dadd0c79dfe",
+      "bytes": 33798,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/remote/vnc.go",
+      "sha256": "8b872555b5c585af0351f271fe4164cfeb88f5f55bfbffed31437e20b43e0e2e",
+      "bytes": 6593,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/state/db.go",
+      "sha256": "374289f201ad5c89454d5992d41c68f677702ed4dc1b7cd1afbd7224f045cf41",
+      "bytes": 5552,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/usb/installer.go",
+      "sha256": "8231545b8e883ce8706dce2bef189d3f425fae832a21cef8c497c4f3e6af2067",
+      "bytes": 4756,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/vault/vault.go",
+      "sha256": "3f465d839267c346ab2bae1fcfe070d2256e09ad2c840066eff1ddf96a0af8d2",
+      "bytes": 2337,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/vault/vault_test.go",
+      "sha256": "e453a34b2b63783258378d21d93f1e0256d17f2d3438aaa5fee40006161ba0fc",
+      "bytes": 1370,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/ventoy/packager.go",
+      "sha256": "09c39d9737119575fa8821b2a4e3c240089c18ebc4f034adeef34dd6ffe20777",
+      "bytes": 4054,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "pkg/ventoy/packager_test.go",
+      "sha256": "e30a5ccfe13a4532383c7a2501c495cd107e55191ac315d69daae2833393c70e",
+      "bytes": 2911,
+      "review": "historical inventory; selective implementation inspection"
+    },
+    {
+      "git_repo": "/Users/fredbook/Code/SonicScrewdriver",
+      "revision": "ed4a7debf7e010bcd3237776f1c4aeffe6765489",
+      "path": "test/integration/workflow_test.go",
+      "sha256": "8dcae486c77a913b1e780e6710beb902ba79124a27f5d337c3b98fd82850e1e6",
+      "bytes": 2725,
+      "review": "historical inventory; selective implementation inspection"
+    }
+  ]
+}

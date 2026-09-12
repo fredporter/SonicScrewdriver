@@ -1,0 +1,175 @@
+schema_version: 1
+devices:
+- id: esp32-devkitc-v4
+  vendor: Espressif
+  model: ESP32-DevKitC V4
+  type: esp32
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:esp32.yaml
+    revision: sha256:308cc25cac8403ed607075b3e876b9937cfc1a8411972385fa9c34e18210ec40
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - wifi-4
+    - bluetooth-4.2
+    - usb-uart
+    - gpio
+    - i2c
+    - spi
+    - adc
+    - meshcore
+    cpu: Xtensa LX6 (dual-core)
+    ram_mb: 8
+    storage_gb: 0
+    wifi_chip: Built-in
+    bluetooth: true
+    meshcore_support: true
+    ewaste_category: recyclable
+    notes: Standard ESP32 dev board, perfect for MeshCore nodes
+  flash_eligible: false
+- id: esp32-s3-devkitc-1
+  vendor: Espressif
+  model: ESP32-S3-DevKitC-1
+  type: esp32
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:esp32.yaml
+    revision: sha256:308cc25cac8403ed607075b3e876b9937cfc1a8411972385fa9c34e18210ec40
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - wifi-4
+    - bluetooth-5.0
+    - usb-otg
+    - gpio
+    - i2c
+    - spi
+    - adc
+    - lcd-interface
+    - meshcore
+    cpu: Xtensa LX7 (dual-core)
+    ram_mb: 16
+    storage_gb: 0
+    wifi_chip: Built-in
+    bluetooth: true
+    meshcore_support: true
+    ewaste_category: recyclable
+    notes: Next-gen ESP32 with more RAM and USB OTG
+  flash_eligible: false
+- id: esp32-c3-devkitm-1
+  vendor: Espressif
+  model: ESP32-C3-DevKitM-1
+  type: esp32
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:esp32.yaml
+    revision: sha256:308cc25cac8403ed607075b3e876b9937cfc1a8411972385fa9c34e18210ec40
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - wifi-4
+    - bluetooth-5.0
+    - usb-uart
+    - gpio
+    - i2c
+    - spi
+    - risc-v
+    - meshcore
+    cpu: RISC-V 32-bit (single-core)
+    ram_mb: 4
+    storage_gb: 0
+    wifi_chip: Built-in
+    bluetooth: true
+    meshcore_support: true
+    ewaste_category: recyclable
+    notes: RISC-V based ESP32, low-cost mesh node
+  flash_eligible: false
+- id: lilygo-ttgo-t-display
+  vendor: LILYGO
+  model: TTGO T-Display
+  type: esp32
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:esp32.yaml
+    revision: sha256:308cc25cac8403ed607075b3e876b9937cfc1a8411972385fa9c34e18210ec40
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - wifi-4
+    - bluetooth-4.2
+    - usb-uart
+    - gpio
+    - i2c
+    - spi
+    - display-135x240
+    - meshcore
+    cpu: Xtensa LX6 (dual-core)
+    ram_mb: 8
+    storage_gb: 0
+    wifi_chip: Built-in
+    bluetooth: true
+    meshcore_support: true
+    ewaste_category: recyclable
+    notes: ESP32 with built-in 1.14" LCD, great for mesh status display
+  flash_eligible: false
+- id: m5stack-stick-c-plus
+  vendor: M5Stack
+  model: Stick C Plus
+  type: esp32
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:esp32.yaml
+    revision: sha256:308cc25cac8403ed607075b3e876b9937cfc1a8411972385fa9c34e18210ec40
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - wifi-4
+    - bluetooth-4.2
+    - usb-uart
+    - gpio
+    - i2c
+    - spi
+    - display-80x160
+    - ir
+    - imu
+    - mic
+    - meshcore
+    cpu: Xtensa LX6 (dual-core)
+    ram_mb: 8
+    storage_gb: 0
+    wifi_chip: Built-in
+    bluetooth: true
+    meshcore_support: true
+    ewaste_category: recyclable
+    notes: ESP32 in a stick form factor with display, sensors, and IR
+  flash_eligible: false
+- id: heltec-wifi-lora-32-v2
+  vendor: Heltec
+  model: WiFi LoRa 32 V2
+  type: esp32
+  hardware_revision: null
+  provenance:
+    source: legacy-sonic-seed:esp32.yaml
+    revision: sha256:308cc25cac8403ed607075b3e876b9937cfc1a8411972385fa9c34e18210ec40
+    verification: unverified
+  legacy_claims:
+    capabilities:
+    - wifi-4
+    - bluetooth-4.2
+    - lora
+    - usb-uart
+    - gpio
+    - i2c
+    - spi
+    - oled-display
+    - meshcore
+    cpu: Xtensa LX6 (dual-core)
+    ram_mb: 8
+    storage_gb: 0
+    wifi_chip: Built-in
+    bluetooth: true
+    meshcore_support: true
+    ewaste_category: recyclable
+    notes: ESP32 with LoRa radio, ideal for long-range mesh
+  flash_eligible: false

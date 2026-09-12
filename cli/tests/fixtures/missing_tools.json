@@ -1,0 +1,22 @@
+{
+  "platform": "linux",
+  "execution_host": "minimal-linux-container",
+  "observed_at": "2026-09-12T10:00:00+00:00",
+  "probes": {
+    "usb": {
+      "status": "missing-tool",
+      "duration_ms": 1.1,
+      "error": "Executable 'lsusb' not found in PATH"
+    },
+    "pci": {
+      "status": "missing-tool",
+      "duration_ms": 1.0,
+      "error": "Executable 'lspci' not found in PATH"
+    },
+    "block": {
+      "status": "ok",
+      "duration_ms": 10.2,
+      "output": "{\"blockdevices\": [{\"name\": \"sda\", \"size\": 64000000000, \"type\": \"disk\", \"mountpoint\": \"/\", \"model\": \"VIRTUAL-DISK\", \"serial\": \"VIRT123\", \"tran\": \"sata\"}]}"
+    }
+  }
+}
