@@ -1,0 +1,124 @@
+# Linux Mint Hardware Profiles for Sonic Provisioner & Revival
+# Pinned Baseline: Linux Mint 22 (Wilma)
+schema_version: 1
+baseline:
+  distribution: "Linux Mint"
+  version: "22"
+  codename: "wilma"
+  kernel_baseline: "6.8.0-generic"
+  upstream_base: "Ubuntu 24.04 LTS"
+
+profiles:
+  cinnamon-full:
+    id: "cinnamon-full"
+    title: "Linux Mint 22 Cinnamon (Full Workstation)"
+    desktop_environment: "cinnamon"
+    compositor: "muffin-3d"
+    min_ram_mb: 4096
+    recommended_ram_mb: 8192
+    min_disk_gb: 20
+    recommended_disk_gb: 64
+    supported_hardware_tiers:
+      - "pc-x86_64"
+      - "intel-mac"
+    background_services:
+      - "lightdm"
+      - "pipewire"
+      - "network-manager"
+      - "udos-daemon"
+    preinstalled_packages:
+      - "mint-meta-cinnamon"
+      - "ucode-runtime"
+      - "gridcore-2d"
+      - "teletext-viewer"
+      - "python3-pip"
+      - "ffmpeg"
+    description: "Full modern desktop workstation with rich visual compositing, full multimedia codecs, and complete uDOS application suite."
+
+  xfce-light:
+    id: "xfce-light"
+    title: "Linux Mint 22 Xfce (Lightweight Revival)"
+    desktop_environment: "xfce"
+    compositor: "xfwm4-2d"
+    min_ram_mb: 2048
+    recommended_ram_mb: 4096
+    min_disk_gb: 15
+    recommended_disk_gb: 32
+    supported_hardware_tiers:
+      - "pc-x86_64"
+      - "intel-mac"
+      - "arm-sbc"
+    background_services:
+      - "lightdm"
+      - "pipewire"
+      - "network-manager"
+    preinstalled_packages:
+      - "mint-meta-xfce"
+      - "ucode-runtime"
+      - "gridcore-2d"
+      - "python3-minimal"
+    description: "Lightweight revival profile optimized for legacy hardware and constrained RAM (2GB-4GB) with minimal background daemons."
+
+hardware_tiers:
+  pc-x86_64:
+    name: "Standard PC x86-64"
+    arch: "x86_64"
+    boot_modes:
+      - "uefi"
+      - "bios"
+    verified_features:
+      - "sleep_wake"
+      - "ethernet"
+      - "wifi_intel_realtek"
+      - "display_vga_hdmi_dp"
+    known_limits: "Older Nvidia legacy GPUs may require nouveau or 390xx driver."
+
+  intel-mac:
+    name: "Intel Mac (2012-2015)"
+    arch: "x86_64"
+    boot_modes:
+      - "uefi-apple"
+    verified_features:
+      - "retina_scaling"
+      - "apple_backlight"
+      - "audio_cirrus"
+    driver_notes:
+      - "Broadcom BCM4360 / BCM4331 requires broadcom-sta-dkms package."
+      - "Apple SMC fan control requires macfanctld daemon."
+      - "EFI dual-boot requires GPT partition table and Apple EFI picker compatibility."
+    known_limits: "Wake from suspend may require darkwake=0 kernel argument on MacBookPro11,x."
+
+  arm-sbc:
+    name: "ARM64 Single Board Computer"
+    arch: "aarch64"
+    boot_modes:
+      - "u-boot"
+      - "rpi-eeprom"
+    verified_features:
+      - "gpio_access"
+      - "dual_hdmi"
+      - "usb3"
+    known_limits: "Experimental support tier. Requires custom device-tree overlays and SBC-specific bootloader."
+
+safety_gates:
+  inspect:
+    level: "read_only"
+    root_required: false
+    destructive: false
+    description: "Non-destructive hardware scan and profile compatibility check."
+
+  provision:
+    level: "disk_write"
+    root_required: true
+    destructive: true
+    requires_target_disk: true
+    requires_confirmation: true
+    requires_backup_check: true
+    description: "Partitioning and writing OS image to target block device. Irreversible data write."
+
+  flash:
+    level: "firmware_write"
+    root_required: true
+    destructive: true
+    requires_physical_validation: true
+    description: "SPI/ROM firmware flashing. Physical target hardware validation required."
