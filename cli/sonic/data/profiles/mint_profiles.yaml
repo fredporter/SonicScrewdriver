@@ -47,6 +47,7 @@ profiles:
     supported_hardware_tiers:
       - "pc-x86_64"
       - "intel-mac"
+      - "recycled-pos-kiosk"
       - "arm-sbc"
     background_services:
       - "lightdm"
@@ -100,12 +101,42 @@ hardware_tiers:
       - "usb3"
     known_limits: "Experimental support tier. Requires custom device-tree overlays and SBC-specific bootloader."
 
+  recycled-pos-kiosk:
+    name: "Recycled POS Terminal & Kiosk"
+    arch: "x86_64"
+    boot_modes:
+      - "usb_live"
+      - "bios"
+      - "uefi"
+    verified_features:
+      - "touchscreen"
+      - "low_power_idle"
+      - "serial_peripherals"
+    known_limits: "Xfce-light profile on bootable USB with persistence is the preferred non-destructive deployment."
+
+  apple-silicon:
+    name: "Apple Silicon Mac (M1-M4)"
+    arch: "arm64"
+    boot_modes:
+      - "native-macos"
+    verified_features:
+      - "native_macos_execution"
+      - "metal_acceleration"
+      - "unified_memory"
+    known_limits: "Runs uDos natively directly on macOS. Linux/CMMint installation is not needed or supported."
+
 safety_gates:
   inspect:
     level: "read_only"
     root_required: false
     destructive: false
     description: "Non-destructive hardware scan and profile compatibility check."
+
+  usb_live:
+    level: "usb_write"
+    root_required: false
+    destructive: false
+    description: "Prepared bootable USB flash drive with live persistence. Non-destructive universal layer; preserves host disks."
 
   provision:
     level: "disk_write"

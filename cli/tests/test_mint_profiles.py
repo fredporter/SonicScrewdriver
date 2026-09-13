@@ -102,3 +102,39 @@ def test_safety_gates_on_provisioning_plan():
     assert plan4["status"] == "authorized_plan"
     assert "AUTHORIZED" in plan4["gate"]
     assert len(plan4["steps"]) > 0
+
+
+def test_apple_silicon_native_host_inspection():
+    device = {
+        "vendor": "Apple",
+        "model": "MacBook Pro M3 Max",
+        "arch": "arm64",
+        "ram_mb": 36864,
+        "storage_gb": 1024,
+    }
+    report = inspect_hardware_compatibility(device)
+    assert report["hardware_tier"]["id"] == "apple-silicon"
+    assert report["preferred_profile"] == "native-macos-host"
+    for p in report["profiles"].values():
+        assert p["status"] == "HOST_NATIVE_MACOS"
+    assert any("Apple Silicon" in w for w in report["warnings"])
+
+
+def test_recycled_pos_kiosk_detection_and_usb_live_plan():
+    assert detect_hardware_tier("NCR", "RealPOS 70XRT", "x86_64") == "recycled-pos-kiosk"
+    assert detect_hardware_tier("Elo", "Touch Kiosk E-Series", "x86_64") == "recycled-pos-kiosk"
+
+    device = {
+        "vendor": "NCR",
+        "model": "RealPOS 70XRT",
+        "arch": "x86_64",
+        "ram_mb": 4096,
+        "storage_gb": 64,
+    }
+    plan = create_provision_plan("xfce-light", device, mode="usb-live")
+    assert plan["status"] == "authorized_plan"
+    assert plan["destructive"] is False
+    assert "usb_live" in plan["gate"]
+    assert "live persistence" in plan["message"]
+    assert len(plan["steps"]) >= 4
+

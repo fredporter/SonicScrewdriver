@@ -45,6 +45,9 @@ def detect_hardware_tier(vendor: str, model: str, arch: str) -> str:
     model_lower = model.lower()
     arch_lower = arch.lower()
 
+    if "pos" in model_lower or "kiosk" in model_lower or "pos" in vendor_lower:
+        return "recycled-pos-kiosk"
+
     if "apple" in vendor_lower or "macbook" in model_lower or "mac mini" in model_lower:
         if arch_lower in ("x86_64", "amd64", "intel"):
             return "intel-mac"
@@ -90,53 +93,66 @@ def inspect_hardware_compatibility(
     elif tier_id == "arm-sbc":
         warnings.append("ARM Single Board Computer tier detected: experimental image required.")
 
-    for p_id, p_spec in profiles.items():
-        min_ram = p_spec.get("min_ram_mb", 2048)
-        rec_ram = p_spec.get("recommended_ram_mb", 4096)
-        min_disk = p_spec.get("min_disk_gb", 15)
-        supported_tiers = p_spec.get("supported_hardware_tiers", [])
+    if tier_id == "apple-silicon":
+        warnings.append("Apple Silicon Mac detected: uDos/uCore runs natively directly on macOS. Linux/CMMint installation is not required or recommended.")
+        for p_id, p_spec in profiles.items():
+            results[p_id] = {
+                "title": p_spec.get("title"),
+                "status": "HOST_NATIVE_MACOS",
+                "compatible": False,
+                "notes": ["M-series Apple Silicon runs uDos natively on macOS; Linux installation is not needed."],
+                "min_ram_mb": p_spec.get("min_ram_mb", 2048),
+                "min_disk_gb": p_spec.get("min_disk_gb", 15),
+            }
+        preferred_profile = "native-macos-host"
+    else:
+        for p_id, p_spec in profiles.items():
+            min_ram = p_spec.get("min_ram_mb", 2048)
+            rec_ram = p_spec.get("recommended_ram_mb", 4096)
+            min_disk = p_spec.get("min_disk_gb", 15)
+            supported_tiers = p_spec.get("supported_hardware_tiers", [])
 
-        reasons = []
-        compatible = True
+            reasons = []
+            compatible = True
 
-        if tier_id not in supported_tiers:
-            compatible = False
-            reasons.append(f"Hardware tier '{tier_id}' is not in supported tiers: {supported_tiers}")
+            if tier_id not in supported_tiers:
+                compatible = False
+                reasons.append(f"Hardware tier '{tier_id}' is not in supported tiers: {supported_tiers}")
 
-        if ram_mb > 0 and ram_mb < min_ram:
-            compatible = False
-            reasons.append(f"Insufficient RAM ({ram_mb} MB); minimum required is {min_ram} MB")
-        elif ram_mb > 0 and ram_mb < rec_ram:
-            reasons.append(f"RAM ({ram_mb} MB) below recommended {rec_ram} MB; may experience swap usage")
+            if ram_mb > 0 and ram_mb < min_ram:
+                compatible = False
+                reasons.append(f"Insufficient RAM ({ram_mb} MB); minimum required is {min_ram} MB")
+            elif ram_mb > 0 and ram_mb < rec_ram:
+                reasons.append(f"RAM ({ram_mb} MB) below recommended {rec_ram} MB; may experience swap usage")
 
-        if storage_gb > 0 and storage_gb < min_disk:
-            compatible = False
-            reasons.append(f"Insufficient storage ({storage_gb} GB); minimum required is {min_disk} GB")
+            if storage_gb > 0 and storage_gb < min_disk:
+                compatible = False
+                reasons.append(f"Insufficient storage ({storage_gb} GB); minimum required is {min_disk} GB")
 
-        status = "COMPATIBLE" if compatible else "INCOMPATIBLE"
-        if compatible and reasons:
-            status = "COMPATIBLE_WITH_WARNINGS"
+            status = "COMPATIBLE" if compatible else "INCOMPATIBLE"
+            if compatible and reasons:
+                status = "COMPATIBLE_WITH_WARNINGS"
 
-        results[p_id] = {
-            "title": p_spec.get("title"),
-            "status": status,
-            "compatible": compatible,
-            "notes": reasons,
-            "min_ram_mb": min_ram,
-            "min_disk_gb": min_disk,
-        }
+            results[p_id] = {
+                "title": p_spec.get("title"),
+                "status": status,
+                "compatible": compatible,
+                "notes": reasons,
+                "min_ram_mb": min_ram,
+                "min_disk_gb": min_disk,
+            }
 
-        if compatible:
-            recommendations.append(p_id)
+            if compatible:
+                recommendations.append(p_id)
 
-    # Pick top recommendation
-    preferred_profile = None
-    if "cinnamon-full" in recommendations and ram_mb >= 4096:
-        preferred_profile = "cinnamon-full"
-    elif "xfce-light" in recommendations:
-        preferred_profile = "xfce-light"
-    elif recommendations:
-        preferred_profile = recommendations[0]
+        # Pick top recommendation
+        preferred_profile = None
+        if "cinnamon-full" in recommendations and ram_mb >= 4096:
+            preferred_profile = "cinnamon-full"
+        elif "xfce-light" in recommendations:
+            preferred_profile = "xfce-light"
+        elif recommendations:
+            preferred_profile = recommendations[0]
 
     return {
         "device": {
@@ -197,6 +213,7 @@ def create_provision_plan(
     target_disk: Optional[str] = None,
     confirm: bool = False,
     backup_verified: bool = False,
+    mode: str = "provision",
 ) -> Dict[str, Any]:
     """Generate a provision plan with strict safety gate validation."""
     spec = load_profile_spec()
@@ -205,6 +222,26 @@ def create_provision_plan(
         raise ProfileError(f"Unknown profile: '{profile_id}'. Available: {list(profiles.keys())}")
 
     p_spec = profiles[profile_id]
+
+    # Non-destructive USB Live Mode
+    if mode in ("usb-live", "usb"):
+        target_usb = target_disk or "/dev/diskX (USB Flash Drive)"
+        return {
+            "status": "authorized_plan",
+            "gate": "usb_live (AUTHORIZED: non-destructive)",
+            "mode": "usb-live",
+            "profile": profile_id,
+            "target_disk": target_usb,
+            "destructive": False,
+            "message": "Prepared bootable USB flash drive with live persistence. Non-destructive universal layer; preserves host disks.",
+            "steps": [
+                f"Format USB target {target_usb} with hybrid MBR/GPT live partition layout",
+                f"Install Linux Mint 22 ({p_spec.get('title')}) image to USB depot",
+                "Enable overlay persistence partition for writable user workspace",
+                "Preload uDos runtime layer and GridCore into persistence image",
+                "Verify bootloader compatibility (UEFI/BIOS/Apple-EFI picker)",
+            ],
+        }
 
     # Safety Gate Check
     if not target_disk:
