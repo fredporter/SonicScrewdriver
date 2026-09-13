@@ -108,6 +108,18 @@ KNOWN_RECIPES: dict[str, dict[str, Any]] = {
             {"action": "configure_autologin", "description": "Configure unprivileged steam-session runner", "destructive": True},
         ],
     },
+    "capsule-provisioning": {
+        "description": "Offline portable USB or kiosk provisioning with signed uCore runtime and global capsule library",
+        "min_storage_bytes": 4_000_000_000,
+        "steps": [
+            {"action": "probe_storage_geometry", "description": "Verify target disk meets minimum 4GB capsule budget", "destructive": False},
+            {"action": "verify_target_table", "description": "Verify partition table and backup existing headers", "destructive": False},
+            {"action": "provision_vault_partitions", "description": "Format boot (FAT32), OS runtime (squashfs), and encrypted Vault (ext4/f2fs)", "destructive": True},
+            {"action": "deploy_runtime_capsule", "description": "Deploy signed base uCore runtime and desktop services", "destructive": True},
+            {"action": "seed_global_knowledge", "description": "Provision canonical Layer 0 global-knowledge datasets and ZIM encyclopedia capsules", "destructive": True},
+            {"action": "verify_capsule_manifest", "description": "Verify cryptographic integrity and root-of-trust signatures", "destructive": False},
+        ],
+    },
 }
 
 
@@ -142,6 +154,9 @@ def create_plan(
         else hashlib.sha256(target_id.encode("utf-8")).hexdigest(),
     }
 
+    min_bytes = recipe_meta.get("min_storage_bytes", 8000000000)
+    cap_status = "satisfied" if fingerprint["size_bytes"] >= min_bytes else "failed"
+
     prerequisites = [
         PlanPrerequisite(
             name="target_unmounted",
@@ -150,8 +165,8 @@ def create_plan(
         ),
         PlanPrerequisite(
             name="minimum_capacity",
-            status="satisfied",
-            details={"required_bytes": 8000000000, "actual_bytes": fingerprint["size_bytes"]},
+            status=cap_status,
+            details={"required_bytes": min_bytes, "actual_bytes": fingerprint["size_bytes"]},
         ),
     ]
 

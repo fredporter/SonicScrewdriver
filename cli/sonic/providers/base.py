@@ -1,6 +1,6 @@
 """Abstract base contracts for read-only hardware discovery."""
 from abc import ABC, abstractmethod
-from typing import Literal
+from typing import Any, Literal, Optional
 
 from pydantic import Field
 
@@ -49,6 +49,8 @@ class ScanReport(Record):
     overall_status: ScanStatus
     probes: list[ProbeResult] = Field(default_factory=list)
     devices: list[NormalizedDevice] = Field(default_factory=list)
+    display_capability: Optional[dict[str, Any]] = None
+    storage_capacity: Optional[dict[str, Any]] = None
 
 
 class BaseProvider(ABC):
