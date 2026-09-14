@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from sonic.lib.catalog import DeviceModel
+from sonic.lib.device_calc import calc_display_capability, calc_storage_capacity
 from sonic.providers.base import (
     BaseProvider,
     NormalizedDevice,
@@ -160,6 +161,25 @@ class FixtureProvider(BaseProvider):
         if "overall_status" in self.data:
             overall = self.data["overall_status"]
 
+        disp_cap = self.data.get("display_capability")
+        if not disp_cap:
+            if "display" in raw_probes:
+                disp_data = raw_probes["display"]
+                dw = disp_data.get("width", 1920)
+                dh = disp_data.get("height", 1080)
+                dtype = disp_data.get("device_type")
+                disp_cap = calc_display_capability(dw, dh, dtype)
+            else:
+                disp_cap = calc_display_capability(1920, 1080)
+
+        store_cap = self.data.get("storage_capacity")
+        if not store_cap:
+            total_block_bytes = sum(dev.size_bytes for dev in devices if dev.bus == "block" and dev.size_bytes)
+            if total_block_bytes > 0:
+                store_cap = calc_storage_capacity(total_block_bytes)
+            else:
+                store_cap = calc_storage_capacity(16_000_000_000)
+
         return ScanReport(
             schema_version=1,
             platform=platform_name,
@@ -168,4 +188,6 @@ class FixtureProvider(BaseProvider):
             overall_status=overall,
             probes=probes,
             devices=devices,
+            display_capability=disp_cap,
+            storage_capacity=store_cap,
         )

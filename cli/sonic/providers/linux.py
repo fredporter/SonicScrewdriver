@@ -12,6 +12,11 @@ import time
 from typing import Any
 
 from sonic.lib.catalog import DeviceModel
+from sonic.lib.device_calc import (
+    calc_display_capability,
+    calc_storage_capacity,
+    detect_host_display,
+)
 from sonic.providers.base import (
     BaseProvider,
     NormalizedDevice,
@@ -117,6 +122,12 @@ class LinuxProvider(BaseProvider):
         else:
             overall = "failed"
 
+        # Calculate display and storage capabilities
+        w, h = detect_host_display()
+        display_cap = calc_display_capability(w, h)
+        total_block_bytes = sum(dev.size_bytes for dev in devices if dev.bus == "block" and dev.size_bytes)
+        storage_cap = calc_storage_capacity(total_block_bytes or 16_000_000_000)
+
         return ScanReport(
             schema_version=1,
             platform=current_platform,
@@ -125,6 +136,8 @@ class LinuxProvider(BaseProvider):
             overall_status=overall,
             probes=probes,
             devices=devices,
+            display_capability=display_cap,
+            storage_capacity=storage_cap,
         )
 
     def _run_tool(self, argv: list[str]) -> tuple[str | None, ProbeStatus, str | None, float]:
