@@ -1,0 +1,8 @@
+{
+  "name": "rollup-json-plugin",
+  "version": "0.1.0",
+  "main": "src/install.js",
+  "scripts": {
+    "test": "node --test tests/install.test.js"
+  }
+}

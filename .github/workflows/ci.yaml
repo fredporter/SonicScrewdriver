@@ -68,3 +68,11 @@ jobs:
                               continue
           print('Spool journal format lint passed')
           "
+
+      - name: Run SVG generation via Ollama and verify tests
+        run: |
+          python -m pytest cli/tests/test_capsule_tomb.py -q
+      - name: Run Rollup JSON Plugin unit tests
+        run: |
+          cd plugins/rollup-json
+          npm test

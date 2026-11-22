@@ -1,0 +1,9 @@
+{
+  "id": "agus/rollup-json-plugin",
+  "name": "Rollup JSON Plugin",
+  "description": "Manages @rollup/plugin-json as a Sonic library plugin, allowing projects to add it via Sonic CLI.",
+  "version": "0.1.0",
+  "entry": "src/install.js",
+  "permissions": ["network", "process"],
+  "ui": {}
+}
