@@ -34,6 +34,7 @@ SCHEMA = "sonic.depot-gc-plan/1"
 MANIFEST_FILE = "depot_manifest.json"
 PINS_FILE = "pins.json"
 RECEIPTS_DIR = "receipts"
+PENDING_RECEIPTS_DIR = "pending"
 
 KEEP = "keep"
 REMOVE = "remove"
@@ -224,6 +225,9 @@ def _load_receipts(root: Path) -> Tuple[List[Dict[str, Any]], List[str]]:
                 "file": path.relative_to(root).as_posix(),
                 "action": str(data.get("action", "")) if isinstance(data, dict) else "",
                 "at": str(data.get("at", "")) if isinstance(data, dict) else "",
+                "pending": path.relative_to(root).as_posix().startswith(
+                    f"{RECEIPTS_DIR}/{PENDING_RECEIPTS_DIR}/"
+                ),
                 "tokens": {token for token in _iter_strings(data) if token},
             }
         )
@@ -777,7 +781,11 @@ def build_gc_plan(
         "policy": policy,
         "catalogue": {"path": str(catalogue_target), "status": catalogue_status},
         "pins": {"path": str(pins_path or root / PINS_FILE), "count": len(local_pins)},
-        "receipts": {"count": len(receipts), "root": str(root / RECEIPTS_DIR)},
+        "receipts": {
+            "count": len(receipts),
+            "pending": sum(1 for receipt in receipts if receipt["pending"]),
+            "root": str(root / RECEIPTS_DIR),
+        },
         "problems": problems,
         "scope": (
             "Registered artifacts only. Unregistered files, other application stores, "
@@ -840,11 +848,14 @@ def _receipt_name(artifact_id: str, moment: datetime) -> str:
 
 
 def _write_receipt(directory: Path, name: str, payload: Dict[str, Any]) -> Path:
+    """Write a durable receipt. ``fsync`` so a crash cannot leave it empty."""
     directory.mkdir(parents=True, exist_ok=True)
     target = directory / name
     with open(target, "x", encoding="utf-8") as stream:
         json.dump(payload, stream, indent=2)
         stream.write("\n")
+        stream.flush()
+        os.fsync(stream.fileno())
     return target
 
 
@@ -936,24 +947,20 @@ def apply_gc_plan(
 
 
     receipts_root = Path(receipt_dir).expanduser() if receipt_dir else depot_root / RECEIPTS_DIR
-    for artifact in removals:
-        # Immediate revalidation: the reviewed bytes are re-proved right here.
-        problem = _revalidate_artifact(depot_root, artifact)
-        if problem:
-            report["stopped"] = {"artifact": artifact["id"], "reason": problem}
-            break
-        path, _ = _resolve_member(depot_root, artifact["relative_path"])
-        if path is None:  # pragma: no cover - proved by _revalidate_artifact
-            report["stopped"] = {"artifact": artifact["id"], "reason": "path containment failed"}
-            break
+    pending_root = receipts_root / PENDING_RECEIPTS_DIR
 
-        before = shutil.disk_usage(depot_root)
-        os.unlink(path)
-        after = shutil.disk_usage(depot_root)
-        removed_at = datetime.now(timezone.utc)
-        receipt = {
+    def receipt_body(
+        artifact: Dict[str, Any],
+        *,
+        state: str,
+        staged_at: str,
+        removed_at: Optional[str],
+        volume: Optional[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        body: Dict[str, Any] = {
             "schema": "sonic.depot-gc-receipt/1",
             "action": "artifact_removed",
+            "state": state,
             "plan_id": plan_id,
             "artifact": {
                 "id": artifact["id"],
@@ -969,20 +976,118 @@ def apply_gc_plan(
             "reason": artifact["reason"],
             "requirement": artifact.get("requirement"),
             "verified_at": artifact["verified_at"],
-            "removed_at": removed_at.isoformat(),
-            "volume": {
-                "used_before_bytes": before.used,
-                "used_after_bytes": after.used,
-                "delta_bytes": before.used - after.used,
-            },
+            "staged_at": staged_at,
+            "removed_at": removed_at,
+            "volume": volume,
             "recovery": artifact.get("upstream_url")
             or "no upstream recorded; the digest above identifies the content",
         }
-        receipt_path = _write_receipt(
-            receipts_root, _receipt_name(artifact["id"], removed_at), receipt
+        if state == "pending":
+            body["note"] = (
+                "Staged before unlink. If this file remains, compare it with the artifact: "
+                "after unlink the digest is already the removal record and this file can be "
+                "kept or promoted; if the file still exists the removal did not happen and "
+                "this staged intent can be reviewed, then removed."
+            )
+        return body
+
+    for artifact in removals:
+        # Immediate revalidation of the candidate and of the copy that must survive it.
+        problem = _revalidate_artifact(depot_root, artifact)
+        if problem:
+            report["stopped"] = {"artifact": artifact["id"], "reason": problem}
+            break
+        requirement = artifact.get("requirement")
+        if requirement:
+            keeper = by_id.get(requirement)
+            if keeper is None or keeper["decision"] != KEEP:
+                report["stopped"] = {
+                    "artifact": artifact["id"],
+                    "reason": f"keeper or successor {requirement} is no longer retained",
+                }
+                break
+            problem = _revalidate_artifact(depot_root, keeper)
+            if problem:
+                report["stopped"] = {
+                    "artifact": artifact["id"],
+                    "reason": f"keeper or successor {requirement} drifted ({problem})",
+                }
+                break
+        path, _ = _resolve_member(depot_root, artifact["relative_path"])
+        if path is None:  # pragma: no cover - proved by _revalidate_artifact
+            report["stopped"] = {"artifact": artifact["id"], "reason": "path containment failed"}
+            break
+
+        planned_at = datetime.now(timezone.utc)
+        name = _receipt_name(artifact["id"], planned_at)
+        pending_path = _write_receipt(
+            pending_root,
+            name,
+            receipt_body(
+                artifact,
+                state="pending",
+                staged_at=planned_at.isoformat(),
+                removed_at=None,
+                volume=None,
+            ),
         )
+
+        before = shutil.disk_usage(depot_root)
+        try:
+            os.unlink(path)  # a crash or signal here leaves the staged receipt as the record
+        except OSError as exc:
+            report["stopped"] = {
+                "artifact": artifact["id"],
+                "reason": f"unlink failed ({exc}); staged receipt kept at {pending_path}",
+            }
+            break
+        after = shutil.disk_usage(depot_root)
+        removed_at = datetime.now(timezone.utc)
+
+        try:
+            receipt_path = _write_receipt(
+                receipts_root,
+                name,
+                receipt_body(
+                    artifact,
+                    state="committed",
+                    staged_at=planned_at.isoformat(),
+                    removed_at=removed_at.isoformat(),
+                    volume={
+                        "used_before_bytes": before.used,
+                        "used_after_bytes": after.used,
+                        "delta_bytes": before.used - after.used,
+                    },
+                ),
+            )
+        except OSError as exc:
+            report["removed"].append(
+                {
+                    "id": artifact["id"],
+                    "bytes": artifact["bytes"],
+                    "receipt": str(pending_path),
+                    "receipt_state": "pending",
+                }
+            )
+            report["bytes_removed"] += artifact["bytes"]
+            report["stopped"] = {
+                "artifact": artifact["id"],
+                "reason": f"receipt finalisation failed ({exc}); staged receipt kept at {pending_path}",
+            }
+            break
+
+        try:
+            pending_path.unlink()
+        except OSError:  # pragma: no cover - the committed receipt is authoritative
+            pass
+
         report["removed"].append(
-            {"id": artifact["id"], "bytes": artifact["bytes"], "receipt": str(receipt_path)}
+            {
+                "id": artifact["id"],
+                "bytes": artifact["bytes"],
+                "receipt": str(receipt_path),
+                "receipt_state": "committed",
+            }
         )
         report["receipts"].append(str(receipt_path))
         report["bytes_removed"] += artifact["bytes"]

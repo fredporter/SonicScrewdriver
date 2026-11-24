@@ -181,6 +181,13 @@ def _render_gc_plan(plan: dict) -> None:
         f"Catalogue: {plan['catalogue']['status']} ({plan['catalogue']['path']}) · "
         f"receipts: {plan['receipts']['count']} · local pins: {plan['pins']['count']}"
     )
+    pending_receipts = plan["receipts"].get("pending", 0)
+    if pending_receipts:
+        click.secho(
+            f"Pending receipts: {pending_receipts} in receipts/pending/ — "
+            "review them before the next apply",
+            fg="yellow",
+        )
     click.echo("")
 
     if not plan["artifacts"]:
@@ -252,7 +259,10 @@ def _render_gc_apply(report: dict) -> None:
         return
 
     for item in report["removed"]:
-        click.echo(f"  removed {item['id']} ({format_bytes(item['bytes'])}) → {item['receipt']}")
+        click.echo(
+            f"  removed {item['id']} ({format_bytes(item['bytes'])}) → {item['receipt']} "
+            f"[{item.get('receipt_state', 'committed')}]"
+        )
     click.echo(
         f"Removed {len(report['removed'])} artifact(s), "
         f"{format_bytes(report['bytes_removed'])} of reviewed bytes"

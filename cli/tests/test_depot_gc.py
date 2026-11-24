@@ -669,9 +669,10 @@ def test_gc_apply_stops_when_an_artifact_drifts_mid_run(runner, tmp_path: Path, 
     calls = []
 
     def drifting_unlink(path):
-        calls.append(Path(path).name)
-        if len(calls) == 1:
-            (depot / "pkg-z2.tgz").write_bytes(b"zzz-payloaX")
+        if Path(path).suffix == ".tgz":
+            calls.append(Path(path).name)
+            if len(calls) == 1:
+                (depot / "pkg-z2.tgz").write_bytes(b"zzz-payloaX")
         real_unlink(path)
 
     monkeypatch.setattr(gc_module.os, "unlink", drifting_unlink)
@@ -700,3 +701,119 @@ def test_gc_apply_reports_no_removals_when_the_plan_has_none(runner, tmp_path: P
     assert "contains no removals" in result.output
     assert (depot / "pkg-a.tgz").exists()
     assert not (depot / "receipts").exists()
+
+
+def test_gc_apply_revalidates_each_keeper_before_its_unlink(runner, tmp_path: Path, monkeypatch):
+    from sonic.lib import depot_gc as gc_module
+
+    depot = make_depot(tmp_path)
+    catalogue = write_catalogue(tmp_path / "catalogue.json")
+    write_manifest(
+        depot,
+        [
+            add_artifact(depot, "pkg-a1", content=b"aaa-payload"),
+            add_artifact(depot, "pkg-a2", content=b"aaa-payload"),
+            add_artifact(depot, "pkg-z1", content=b"zzz-payload"),
+            add_artifact(depot, "pkg-z2", content=b"zzz-payload"),
+        ],
+    )
+    plan = build_gc_plan(depot, catalogue_path=catalogue, now=NOW)
+    assert plan["totals"]["eligible_count"] == 2
+    assert _artifact(plan, "pkg-z2")["requirement"] == "pkg-z1"
+
+    real_unlink = gc_module.os.unlink
+
+    def drifting_unlink(path):
+        if Path(path).suffix == ".tgz" and Path(path).name == "pkg-a2.tgz":
+            # The keeper for the *next* candidate changes after the first removal.
+            (depot / "pkg-z1.tgz").write_bytes(b"zzz-payloaX")
+        real_unlink(path)
+
+    monkeypatch.setattr(gc_module.os, "unlink", drifting_unlink)
+
+    result = _apply(runner, depot, catalogue, plan["plan_id"])
+
+    assert result.exit_code == 1
+    assert "keeper or successor pkg-z1 drifted" in result.output
+    assert not (depot / "pkg-a2.tgz").exists()
+    assert (depot / "pkg-z2.tgz").exists()
+    assert (depot / "pkg-z1.tgz").read_bytes() == b"zzz-payloaX"
+    assert len(list((depot / "receipts").glob("*.json"))) == 1
+
+
+def test_gc_apply_keeps_a_pending_receipt_when_finalisation_fails(
+    runner, tmp_path: Path, monkeypatch
+):
+    from sonic.lib import depot_gc as gc_module
+
+    depot = make_depot(tmp_path)
+    catalogue = write_catalogue(tmp_path / "catalogue.json")
+    write_manifest(depot, [add_artifact(depot, "pkg-a"), add_artifact(depot, "pkg-b")])
+    plan = build_gc_plan(depot, catalogue_path=catalogue, now=NOW)
+
+    real_write = gc_module._write_receipt
+
+    def failing_write(directory, name, payload):
+        if payload.get("state") == "committed":
+            raise OSError(28, "No space left on device")
+        return real_write(directory, name, payload)
+
+    monkeypatch.setattr(gc_module, "_write_receipt", failing_write)
+
+    result = _apply(runner, depot, catalogue, plan["plan_id"])
+
+    assert result.exit_code == 1
+    assert "receipt finalisation failed" in result.output
+    assert not (depot / "pkg-b.tgz").exists()
+    assert not list((depot / "receipts").glob("*.json"))
+    staged = list((depot / "receipts" / "pending").glob("*.json"))
+    assert len(staged) == 1
+    record = json.loads(staged[0].read_text(encoding="utf-8"))
+    assert record["state"] == "pending"
+    assert record["artifact"]["id"] == "pkg-b"
+    assert record["artifact"]["sha256"] == _sha(PAYLOAD)
+    assert record["removed_at"] is None
+    assert record["volume"] is None
+    assert "Staged before unlink" in record["note"]
+
+    after = build_gc_plan(depot, catalogue_path=catalogue, now=NOW)
+    assert after["receipts"]["pending"] == 1
+    assert after["totals"]["eligible_count"] == 0
+
+
+def test_gc_apply_keeps_a_pending_receipt_when_the_unlink_is_interrupted(
+    runner, tmp_path: Path, monkeypatch
+):
+    from sonic.lib import depot_gc as gc_module
+
+    depot = make_depot(tmp_path)
+    catalogue = write_catalogue(tmp_path / "catalogue.json")
+    write_manifest(depot, [add_artifact(depot, "pkg-a"), add_artifact(depot, "pkg-b")])
+    plan = build_gc_plan(depot, catalogue_path=catalogue, now=NOW)
+
+    real_unlink = gc_module.os.unlink
+
+    def interrupted_unlink(path):
+        if Path(path).suffix == ".tgz":
+            raise OSError(4, "Interrupted system call")
+        real_unlink(path)
+
+    monkeypatch.setattr(gc_module.os, "unlink", interrupted_unlink)
+
+    result = _apply(runner, depot, catalogue, plan["plan_id"])
+
+    assert result.exit_code == 1
+    assert "unlink failed" in result.output
+    assert (depot / "pkg-b.tgz").exists()
+    assert not list((depot / "receipts").glob("*.json"))
+    staged = list((depot / "receipts" / "pending").glob("*.json"))
+    assert len(staged) == 1
+    record = json.loads(staged[0].read_text(encoding="utf-8"))
+    assert record["state"] == "pending"
+    assert record["artifact"]["id"] == "pkg-b"
+    assert record["removed_at"] is None
+
+    after = build_gc_plan(depot, catalogue_path=catalogue, now=NOW)
+    assert after["receipts"]["pending"] == 1
+    assert _artifact(after, "pkg-b")["decision"] == "keep"
+    assert after["totals"]["eligible_count"] == 0
