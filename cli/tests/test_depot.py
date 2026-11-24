@@ -1,6 +1,7 @@
 """Unit tests for Sonic Local Depot and Offline Artifact Cache."""
 
 from pathlib import Path
+import json
 import pytest
 
 from sonic.lib.depot import (
@@ -77,3 +78,25 @@ def test_verify_depot_artifact(sample_iso_file: Path, tmp_path: Path):
     ver_tampered = verify_artifact("mint-22-cinnamon", depot_dir=depot_dir)
     assert ver_tampered["healthy"] is False
     assert ver_tampered["status"] == "checksum_mismatch"
+
+
+def test_cli_register_list_and_verify_use_an_explicit_depot(runner, tmp_path: Path):
+    from sonic.cli import cli
+
+    source = tmp_path / "pkg.tgz"
+    source.write_bytes(b"PAYLOAD")
+    depot_dir = tmp_path / "depot"
+
+    registered = runner.invoke(
+        cli, ["depot", "register", str(source), "--id", "pkg", "--depot", str(depot_dir)]
+    )
+    assert registered.exit_code == 0, registered.output
+    assert (depot_dir / "depot_manifest.json").is_file()
+
+    verified = runner.invoke(cli, ["depot", "verify", "pkg", "--depot", str(depot_dir)])
+    assert verified.exit_code == 0, verified.output
+
+    listed = runner.invoke(cli, ["depot", "list", "--depot", str(depot_dir), "--json"])
+    assert listed.exit_code == 0, listed.output
+    assert json.loads(listed.output)[0]["id"] == "pkg"
+    assert len([p for p in depot_dir.iterdir()]) == 2  # artifact + manifest, no copy

@@ -30,15 +30,16 @@ def depot_cmd():
 
 @depot_cmd.command("list")
 @click.option("--kind", "-k", help="Filter by artifact kind (iso, package, tool, installer)")
+@click.option("--depot", "depot_dir", type=click.Path(file_okay=False, path_type=Path), help="Explicit depot root")
 @click.option("--json", "as_json", is_flag=True, help="Output as JSON")
-def list_depot(kind: Optional[str], as_json: bool):
+def list_depot(kind: Optional[str], depot_dir: Optional[Path], as_json: bool):
     """List all cached installers, ISOs, and tools in the local depot."""
-    artifacts = list_artifacts(kind=kind)
+    artifacts = list_artifacts(kind=kind, depot_dir=depot_dir)
     if as_json:
         click.echo(json.dumps(artifacts, indent=2))
         return
 
-    roots = get_default_depot_roots()
+    roots = [depot_dir] if depot_dir else get_default_depot_roots()
     click.echo(f"Active Depot Roots: {', '.join(str(r) for r in roots if r.exists())}\n")
 
     if not artifacts:
@@ -64,6 +65,7 @@ def list_depot(kind: Optional[str], as_json: bool):
 @click.option("--url", default="", help="Upstream origin URL")
 @click.option("--profile", "-p", multiple=True, help="Target Mint profiles (e.g. cinnamon-full, xfce-light)")
 @click.option("--description", default="", help="Description of the artifact")
+@click.option("--depot", "depot_dir", type=click.Path(file_okay=False, path_type=Path), help="Explicit depot root")
 def register(
     file_path: Path,
     artifact_id: str,
@@ -73,6 +75,7 @@ def register(
     url: str,
     profile: tuple,
     description: str,
+    depot_dir: Optional[Path],
 ):
     """Register and verify a local ISO or installer into the offline depot."""
     try:
@@ -85,6 +88,7 @@ def register(
             upstream_url=url,
             target_profiles=list(profile),
             description=description,
+            depot_dir=depot_dir,
         )
         click.secho(f"Successfully registered '{artifact_id}' in local depot.", fg="green")
         click.echo(json.dumps(rec.to_dict(), indent=2))
@@ -95,10 +99,11 @@ def register(
 
 @depot_cmd.command("verify")
 @click.argument("artifact_id")
-def verify(artifact_id: str):
+@click.option("--depot", "depot_dir", type=click.Path(file_okay=False, path_type=Path), help="Explicit depot root")
+def verify(artifact_id: str, depot_dir: Optional[Path]):
     """Verify presence and cryptographic SHA-256 integrity of a cached artifact."""
     try:
-        res = verify_artifact(artifact_id)
+        res = verify_artifact(artifact_id, depot_dir=depot_dir)
         if res.get("healthy"):
             click.secho(f"Artifact '{artifact_id}' integrity OK (SHA-256 match).", fg="green")
         else:
