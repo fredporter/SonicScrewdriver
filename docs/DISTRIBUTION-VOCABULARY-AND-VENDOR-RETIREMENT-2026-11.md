@@ -231,7 +231,7 @@ Byte accounting keeps the three figures apart, as §8 requires:
 Unregistered files, other application stores, Docker volumes and the Trash are
 outside the inventory: the plan reads the manifest and nothing else.
 
-Evidence: `cli/tests/test_depot_gc.py` (29 tests, disposable depots) covers the
+Evidence: `cli/tests/test_depot_gc.py` (32 tests, disposable depots) covers the
 explicit-root refusal, flat and nested manifest paths, path containment,
 missing files, size mismatches, tampering, catalogue and local pins, receipt
 references in nested receipt directories, unreadable inputs, duplicates,
@@ -239,9 +239,10 @@ hardlinks, expiry retention, supersession, plan-id stability, immutability of
 the depot across a verified run, the retention-closure regressions
 (self-supersession, successor cycles, a multi-step successor chain), the
 "expired but still the only verified copy" case, and apply: plan-id matching,
-candidate and keeper drift, a drift that appears mid-run, one receipt per
-removal and an empty plan. Two tests pin the retired `~/Code/Vendor` lane and
-`depot list` discovery. The live depot plan reports both NanoCoder artifacts as
+candidate and keeper drift at plan time and between removals, recovery from a
+failed receipt write and from an interrupted unlink, one receipt per removal and
+an empty plan. Two tests pin the retired `~/Code/Vendor` lane and `depot list`
+discovery. The live depot plan reports both NanoCoder artifacts as
 `pinned — retained` with `link_count = 2`, eligible bytes `0` and estimated
 reclaimable `0`, which is the honest answer.
 
@@ -259,18 +260,32 @@ symlink, regular file, unchanged device and inode, unchanged size and a fresh
 SHA-256. Its `requirement` must still exist, still be retained by the plan and
 still hash clean. Any failure refuses the whole run with nothing removed.
 
-Immediately before each individual unlink the same revalidation runs again. If
-the file drifted since the plan, the run stops, reports
-`Stopped at <id>: digest changed since the plan …`, leaves the file in place and
-exits non-zero; removals already completed keep their receipts, so the report
-always describes what actually happened.
+Immediately before each individual unlink the same revalidation runs again — for
+the candidate **and for its `requirement`**, so a keeper or successor that drifts
+after an earlier removal stops the next one. If anything drifted since the plan,
+the run stops, reports `Stopped at <id>: digest changed since the plan …` or
+`Stopped at <id>: keeper or successor <keeper> drifted (…)`, leaves the file in
+place and exits non-zero; removals already completed keep their receipts, so the
+report always describes what actually happened.
 
-Each removal writes one receipt, `receipts/gc-<utc>-<id>.json`
-(`sonic.depot-gc-receipt/1`), holding the plan id, artifact id/kind/version/
-path/bytes/SHA-256/device/inode/link count, the reason, the requirement, the
-verification time, the removal time, the measured volume before and after that
-specific unlink, and a recovery note (the manifest's upstream URL, or the digest
-when no upstream was recorded).
+Each removal is recorded twice. A **pending** receipt is staged and `fsync`ed
+under `receipts/pending/gc-<utc>-<id>.json` *before* the unlink, carrying the plan
+id, artifact identity and SHA-256, reason, requirement, verification time and a
+recovery note. After the unlink the **committed** receipt
+`receipts/gc-<utc>-<id>.json` is written with `state: committed`, `removed_at`
+and the measured volume before and after that unlink, and the pending file is
+removed. If the committed write fails, the pending file is kept and the run stops
+with `receipt finalisation failed (…)`; if the unlink itself fails, the pending
+file is likewise kept and the run stops with `unlink failed (…)`. In both cases
+the staged record identifies exactly what was at stake even though nothing else
+survived the failure.
+
+A leftover pending receipt is a deliberate stop, not noise: the plan reports
+`receipts.pending`, the dry run prints `Pending receipts: … review them before the
+next apply`, and the staged file matches the artifact id so that artifact is
+retained. Compare the file with the artifact before clearing it: absent artifact,
+keep the staged record as the removal record; present artifact, the removal did
+not happen and the intent can be reviewed, then deleted.
 
 The report (`sonic.depot-gc-apply/1`) lists what was removed with its receipt,
 the reviewed bytes removed, the receipt count, the volume before and after, the
@@ -282,8 +297,10 @@ removed entry therefore still appears in later plans as a missing file (and is
 also caught by its own removal receipt), so manifest reconciliation stays a
 separate reviewed step instead of an implicit write inside the deletion path.
 
-Evidence: six apply tests run only against disposable depots — one removal with a
-receipt, a plan-id mismatch, candidate drift, keeper drift, a drift injected
-between two removals (one receipt, second file retained), and an empty plan. No
-live apply has been run: `~/Code/Depot` is untouched and its plan currently
-contains no removals.
+Evidence: nine apply tests run only against disposable depots — one removal with a
+receipt, a plan-id mismatch, candidate drift, keeper drift, a candidate drift
+injected between two removals, a keeper drift injected between two removals (the
+second candidate stays), a committed-receipt write failure (pending receipt kept,
+artifact gone), an unlink failure (pending receipt kept, artifact present) and an
+empty plan. No live apply has been run: `~/Code/Depot` is untouched and its plan
+currently contains no removals.
