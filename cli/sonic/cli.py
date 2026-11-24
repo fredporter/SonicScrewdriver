@@ -6,6 +6,7 @@ from sonic.commands.config import config
 from sonic.commands.library import library
 from sonic.commands.plan import apply_cmd, plan_cmd
 from sonic.commands.depot import depot_cmd
+from sonic.commands.catalogue import catalogue_cmd
 from sonic.commands.package import package_cmd
 from sonic.commands.profile import profile_cmd
 from sonic.commands.scan import doctor, scan
@@ -29,6 +30,7 @@ cli.add_command(diagnostics)
 cli.add_command(config)
 cli.add_command(library)
 cli.add_command(depot_cmd, "depot")
+cli.add_command(catalogue_cmd, "catalogue")
 cli.add_command(package_cmd, "package")
 cli.add_command(profile_cmd, "profile")
 cli.add_command(scan)
