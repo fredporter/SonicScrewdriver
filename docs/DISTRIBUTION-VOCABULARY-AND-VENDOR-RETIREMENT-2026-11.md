@@ -146,3 +146,83 @@ Prerequisite, now closed: `depot register` no longer has an implicit destination
 
 `--apply` requires the plan identifier printed by the dry run, re-verifies each artifact immediately before unlinking, refuses when a candidate is the only verified copy, pinned, or referenced, and writes one receipt per removal. No blanket prune, no implicit root, no silent deletion.
 
+### 8.1 Read-only dry run (implemented 2026-11-24)
+
+`sonic depot gc` is dry-run only. It writes nothing, unlinks nothing and has no
+`--apply` flag yet: passing one is a usage error, so a half-built apply cannot
+be reached by habit.
+
+```sh
+cd ~/Code/SonicScrewdriver/cli
+python3 -m sonic.cli depot gc --depot ~/Code/Depot
+python3 -m sonic.cli depot gc --depot ~/Code/Depot --json
+python3 -m sonic.cli depot gc --depot ~/Code/Depot --retain-days 90 --verify
+python3 -m sonic.cli depot gc --depot ~/Code/Depot --supersede old-id=new-id@1.4.0
+```
+
+The plan document (`sonic.depot-gc-plan/1`) carries a stable `plan_id`: the
+SHA-256 of the root, policy, per-artifact identity and decision, and the byte
+totals. Identical inventory and policy produce an identical id; `generated_at`
+and the volume figures are deliberately outside the digest so a re-run can be
+compared with the reviewed plan.
+
+Per artifact the plan reports id, kind, version, path, bytes, the recorded
+digest, `last_verified_at` (from evidence, or the plan's own hash time), every
+pin with its source, every receipt that still references the artifact, the
+hardlink device/inode/link count, and one reason string. Reasons are
+`expired`, `superseded by <id>@<version>`, `duplicate of <id>`,
+`pinned — retained`, `referenced by a receipt — retained`,
+`missing integrity — retained (<detail>)` and
+`unknown references — retained (...)`.
+
+Refusal rules, in order:
+
+1. **Unknown references.** An unreadable manifest, receipt, `pins.json` or base
+   catalogue, an ambiguous manifest key/id pair, or a malformed
+   `--supersede` means the plan cannot prove what still needs the payload, so
+   it proposes no removals at all. A missing catalogue counts here: the pins
+   live in Layer 0, so "not found" is not "nothing is pinned".
+2. **Pins.** Any artifact named by the Layer 0 catalogue (by id, digest or file
+   name) or by the optional `<depot>/pins.json` is pinned.
+3. **Receipts.** Any receipt under `<depot>/receipts/**.json` that mentions the
+   artifact's id, `id@version`, relative path, file name, basename or digest
+   blocks removal. Receipt schemas vary, so matching is by value, not by a
+   fixed field list.
+4. **Integrity and containment.** A manifest path must be relative, free of
+   `..`, not a symlink and inside the resolved depot root. Missing files,
+   non-regular files, missing digests and size mismatches are refused; every
+   candidate and every copy that would keep its content is hashed at plan time,
+   so a tampered candidate is reported, not removed.
+5. **Sole verified copy.** A duplicate is only eligible while the copy that
+   would remain hashes clean. If it does not, the candidate is retained as the
+   only verified copy. A superseded artifact waits until its successor
+   verifies.
+
+Byte accounting keeps the three figures apart, as §8 requires:
+
+- `artifact_bytes` — the sum of the artifacts' recorded sizes;
+- `unique_inode_bytes` — the same sum with hardlinks counted once per inode;
+- `eligible_artifact_bytes` — the unique-inode bytes of the artifacts the plan
+  proposes to remove;
+- `estimated_reclaimable_bytes` — zero for any eligible inode whose link count
+  is still above one;
+- `volume.used_bytes` — measured before the plan; `after_used_bytes` stays
+  `null`, because APFS shared blocks and clone groups make the delta
+  unpredictable until apply measures it.
+
+Unregistered files, other application stores, Docker volumes and the Trash are
+outside the inventory: the plan reads the manifest and nothing else.
+
+Evidence: `cli/tests/test_depot_gc.py` (16 tests, disposable depots) covers the
+explicit-root refusal, flat and nested manifest paths, path containment,
+missing files, size mismatches, tampering, catalogue and local pins, receipt
+references in nested receipt directories, unreadable inputs, duplicates,
+hardlinks, expiry, supersession, plan-id stability and immutability of the
+depot across a verified run. The live depot plan reports both NanoCoder
+artifacts as `pinned — retained` with `link_count = 2`, eligible bytes `0` and
+estimated reclaimable `0`, which is the honest answer.
+
+Remaining before apply: quote the reviewed plan id, revalidate bytes, digests,
+pins, references and containment immediately before each unlink, tolerate
+concurrent changes, write one receipt per removal, and measure the volume
+before and after to report the real delta.
