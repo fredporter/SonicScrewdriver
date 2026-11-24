@@ -77,6 +77,16 @@ def register(
     depot_dir: Optional[Path],
 ):
     """Register and verify a local ISO or installer into the offline depot."""
+    explicit = depot_dir or (os.environ.get("SONIC_DEPOT_ROOT") or "")
+    if not explicit:
+        click.secho(
+            "An explicit depot root is required: pass --depot or set SONIC_DEPOT_ROOT.",
+            fg="red",
+            err=True,
+        )
+        raise click.Abort()
+    root = Path(explicit).expanduser()
+
     try:
         rec = register_artifact(
             file_path=file_path,
@@ -87,7 +97,7 @@ def register(
             upstream_url=url,
             target_profiles=list(profile),
             description=description,
-            depot_dir=depot_dir,
+            depot_dir=root,
         )
         click.secho(f"Successfully registered '{artifact_id}' in local depot.", fg="green")
         click.echo(json.dumps(rec.to_dict(), indent=2))

@@ -80,6 +80,35 @@ def test_verify_depot_artifact(sample_iso_file: Path, tmp_path: Path):
     assert ver_tampered["status"] == "checksum_mismatch"
 
 
+def test_cli_register_requires_an_explicit_depot(runner, tmp_path: Path):
+    from sonic.cli import cli
+
+    source = tmp_path / "pkg.tgz"
+    source.write_bytes(b"PAYLOAD")
+
+    result = runner.invoke(
+        cli, ["depot", "register", str(source), "--id", "pkg"], env={"SONIC_DEPOT_ROOT": ""}
+    )
+    assert result.exit_code != 0
+    assert "explicit depot root is required" in result.output
+
+
+def test_cli_register_honours_sonic_depot_root(runner, tmp_path: Path):
+    from sonic.cli import cli
+
+    source = tmp_path / "pkg.tgz"
+    source.write_bytes(b"PAYLOAD")
+    depot_dir = tmp_path / "depot"
+
+    result = runner.invoke(
+        cli,
+        ["depot", "register", str(source), "--id", "pkg"],
+        env={"SONIC_DEPOT_ROOT": str(depot_dir)},
+    )
+    assert result.exit_code == 0, result.output
+    assert (depot_dir / "depot_manifest.json").is_file()
+
+
 def test_cli_register_list_and_verify_use_an_explicit_depot(runner, tmp_path: Path):
     from sonic.cli import cli
 
