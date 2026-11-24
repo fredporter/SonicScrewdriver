@@ -61,7 +61,11 @@ Measured on 2026-11-24 for NanoCoder 1.30.0:
 - with a cold npm cache, `npm install --offline` fails (`ENOTCACHED` on `strip-json-comments@5.1.0`) — the tarball alone is **not** an offline installer;
 - with a warm cache the same offline install succeeds, and the installer proves the installed package is byte-identical to the archive before applying reviewed patches.
 
-Rule: **an artifact is provenance and a verification gate; the offline unit is the verified installed tree.** Ship that as a Package (`.spkg`, per-file SHA) or a capsule payload, and keep the artifact as the thing the gate checks.
+Rule: **an artifact is provenance and a verification gate; the offline unit is the verified tarball plus a pinned dependency bundle.** The installer now installs from the retained tarball path rather than the registry name, and accepts `--deps <bundle|dir>`; `--build-deps` produces the bundle from one clean online install.
+
+Measured bundle: the resolved dependency cache is 199 MB and compresses to a 79,590,347-byte `tar.gz` (`sha256 0e396c6a…815b`). Proven end to end in a fresh `UDOS_HOME` with `npm_config_cache` pointing at an empty directory and `--offline`: 351 packages in 5 s, both patches applied, installed version asserted, and the installed package diffed against the verified archive.
+
+Caveat worth knowing: npm cache keys include the registry URL, so the bundle must be built against the same registry used at install time. Building from `registry.npmjs.org` and installing with a different `npm_config_registry` fails with `ENOTCACHED` — that is a cache-key mismatch, not corruption. The bundle ships in the Depot as artifact `nanocoder-npm-cache` and is declared in the catalogue seed beside the tarball.
 
 ## 4. The update gate and manager
 
