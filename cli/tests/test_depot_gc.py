@@ -265,7 +265,7 @@ def test_gc_hardlinked_duplicate_is_eligible_but_frees_nothing(tmp_path: Path):
     assert plan["totals"]["estimated_reclaimable_bytes"] == 0
 
 
-def test_gc_expiry_policy_uses_the_recorded_added_time(tmp_path: Path):
+def test_gc_expiry_without_a_keeper_is_retained(tmp_path: Path):
     depot = make_depot(tmp_path)
     catalogue = write_catalogue(tmp_path / "catalogue.json")
     old = (NOW - timedelta(days=40)).isoformat()
@@ -274,9 +274,14 @@ def test_gc_expiry_policy_uses_the_recorded_added_time(tmp_path: Path):
     expired = _plan(depot, catalogue, retain_days=30)
     retained = _plan(depot, catalogue, retain_days=60)
 
-    assert _artifact(expired, "old-pkg")["decision"] == "remove"
-    assert _artifact(expired, "old-pkg")["reason"].startswith("expired (added ")
-    assert _artifact(retained, "old-pkg")["decision"] == "keep"
+    artifact = _artifact(expired, "old-pkg")
+    assert expired["totals"]["eligible_count"] == 0
+    assert artifact["decision"] == "keep"
+    assert artifact["reason"] == (
+        "expired — retained (no verified keeper or successor would remain after the plan)"
+    )
+    assert expired["refusals"]["sole_verified_copy"] == ["old-pkg"]
+    assert _artifact(retained, "old-pkg")["reason"] == "retained — no retention policy matched"
     assert retained["plan_id"] != expired["plan_id"]
 
 
@@ -403,9 +408,10 @@ def test_gc_cli_prints_a_plan_and_has_no_apply(runner, tmp_path: Path):
         cli, ["depot", "gc", "--depot", str(depot), "--catalogue", str(catalogue), "--apply"]
     )
     assert apply_attempt.exit_code != 0
+    assert "reviewed plan id" in apply_attempt.output
 
 
-def test_gc_keeper_that_also_expires_retains_both(tmp_path: Path):
+def test_gc_expired_duplicate_goes_only_because_its_keeper_remains(tmp_path: Path):
     depot = make_depot(tmp_path)
     catalogue = write_catalogue(tmp_path / "catalogue.json")
     old = (NOW - timedelta(days=40)).isoformat()
@@ -418,13 +424,15 @@ def test_gc_keeper_that_also_expires_retains_both(tmp_path: Path):
 
     keeper = _artifact(plan, "pkg-a")
     duplicate = _artifact(plan, "pkg-b")
-    assert plan["totals"]["eligible_count"] == 0
     assert keeper["decision"] == "keep"
-    assert duplicate["decision"] == "keep"
-    assert duplicate["reason"] == "required copy pkg-a is also scheduled for removal — retained"
-    assert keeper["reason"] == "keeper/successor for pkg-b — retained"
-    assert plan["refusals"]["unretained_reference"] == ["pkg-b"]
-    assert plan["refusals"]["keeper_required"] == ["pkg-a"]
+    assert keeper["reason"] == (
+        "expired — retained (no verified keeper or successor would remain after the plan)"
+    )
+    assert duplicate["decision"] == "remove"
+    assert duplicate["reason"] == "duplicate of pkg-a"
+    assert duplicate["requirement"] == "pkg-a"
+    assert plan["totals"]["eligible_count"] == 1
+    assert plan["totals"]["estimated_reclaimable_bytes"] == len(PAYLOAD)
 
 
 def test_gc_refuses_self_supersession(tmp_path: Path):
@@ -493,7 +501,7 @@ def test_gc_chain_never_removes_its_own_successor(tmp_path: Path):
     assert _artifact(plan, "pkg-b")["reason"] == "keeper/successor for pkg-a — retained"
 
 
-def test_gc_successor_that_also_expires_retains_the_pair(tmp_path: Path):
+def test_gc_expired_successor_still_allows_the_superseded_removal(tmp_path: Path):
     depot = make_depot(tmp_path)
     catalogue = write_catalogue(tmp_path / "catalogue.json")
     old = (NOW - timedelta(days=40)).isoformat()
@@ -507,11 +515,16 @@ def test_gc_successor_that_also_expires_retains_the_pair(tmp_path: Path):
 
     plan = _plan(depot, catalogue, retain_days=30, supersede=["pkg-a=pkg-b@2.0.0"])
 
-    assert plan["totals"]["eligible_count"] == 0
-    assert _artifact(plan, "pkg-a")["reason"] == (
-        "required copy pkg-b is also scheduled for removal — retained"
+    successor = _artifact(plan, "pkg-b")
+    superseded = _artifact(plan, "pkg-a")
+    assert successor["decision"] == "keep"
+    assert successor["reason"] == (
+        "expired — retained (no verified keeper or successor would remain after the plan)"
     )
-    assert _artifact(plan, "pkg-b")["reason"] == "keeper/successor for pkg-a — retained"
+    assert superseded["decision"] == "remove"
+    assert superseded["reason"] == "superseded by pkg-b@2.0.0"
+    assert superseded["requirement"] == "pkg-b"
+    assert plan["totals"]["eligible_count"] == 1
 
 
 def test_default_depot_roots_exclude_the_retired_vendor_lane(monkeypatch, tmp_path: Path):
@@ -538,3 +551,152 @@ def test_cli_depot_list_without_an_explicit_root_uses_discovery(runner, monkeypa
     assert result.exit_code == 0, result.output
     assert "Active Depot Roots" in result.output
     assert "No artifacts registered" in result.output
+
+
+def _apply(runner, depot: Path, catalogue: Path, plan_id: str):
+    from sonic.cli import cli
+
+    return runner.invoke(
+        cli,
+        [
+            "depot",
+            "gc",
+            "--depot",
+            str(depot),
+            "--catalogue",
+            str(catalogue),
+            "--apply",
+            "--plan-id",
+            plan_id,
+        ],
+    )
+
+
+def test_gc_apply_removes_the_duplicate_and_writes_one_receipt(runner, tmp_path: Path):
+    depot = make_depot(tmp_path)
+    catalogue = write_catalogue(tmp_path / "catalogue.json")
+    write_manifest(depot, [add_artifact(depot, "pkg-a"), add_artifact(depot, "pkg-b")])
+    plan = build_gc_plan(depot, catalogue_path=catalogue, now=NOW)
+    assert plan["totals"]["eligible_count"] == 1
+
+    result = _apply(runner, depot, catalogue, plan["plan_id"])
+
+    assert result.exit_code == 0, result.output
+    assert not (depot / "pkg-b.tgz").exists()
+    assert (depot / "pkg-a.tgz").exists()
+    receipts = sorted((depot / "receipts").glob("*.json"))
+    assert len(receipts) == 1
+    receipt = json.loads(receipts[0].read_text(encoding="utf-8"))
+    assert receipt["schema"] == "sonic.depot-gc-receipt/1"
+    assert receipt["action"] == "artifact_removed"
+    assert receipt["plan_id"] == plan["plan_id"]
+    assert receipt["artifact"]["id"] == "pkg-b"
+    assert receipt["artifact"]["sha256"] == _sha(PAYLOAD)
+    assert receipt["reason"] == "duplicate of pkg-a"
+    assert receipt["requirement"] == "pkg-a"
+    assert receipt["volume"]["used_before_bytes"] > 0
+    assert "recovery" in receipt
+
+    after = build_gc_plan(depot, catalogue_path=catalogue, now=NOW)
+    assert after["totals"]["eligible_count"] == 0
+    assert after["plan_id"] != plan["plan_id"]
+
+
+def test_gc_apply_refuses_a_plan_id_that_does_not_match(runner, tmp_path: Path):
+    depot = make_depot(tmp_path)
+    catalogue = write_catalogue(tmp_path / "catalogue.json")
+    write_manifest(depot, [add_artifact(depot, "pkg-a"), add_artifact(depot, "pkg-b")])
+
+    result = _apply(runner, depot, catalogue, "gc-" + "0" * 64)
+
+    assert result.exit_code != 0
+    assert "does not match plan" in result.output
+    assert (depot / "pkg-b.tgz").exists()
+    assert not (depot / "receipts").exists()
+
+
+def test_gc_apply_refuses_a_candidate_that_drifted(runner, tmp_path: Path):
+    depot = make_depot(tmp_path)
+    catalogue = write_catalogue(tmp_path / "catalogue.json")
+    write_manifest(depot, [add_artifact(depot, "pkg-a"), add_artifact(depot, "pkg-b")])
+    plan = build_gc_plan(depot, catalogue_path=catalogue, now=NOW)
+
+    (depot / "pkg-b.tgz").write_bytes(b"tampered")
+
+    result = _apply(runner, depot, catalogue, plan["plan_id"])
+
+    assert result.exit_code != 0
+    assert "does not match plan" in result.output
+    assert (depot / "pkg-b.tgz").exists()
+    assert not (depot / "receipts").exists()
+
+
+def test_gc_apply_refuses_when_the_keeper_drifted(runner, tmp_path: Path):
+    depot = make_depot(tmp_path)
+    catalogue = write_catalogue(tmp_path / "catalogue.json")
+    write_manifest(depot, [add_artifact(depot, "pkg-a"), add_artifact(depot, "pkg-b")])
+    plan = build_gc_plan(depot, catalogue_path=catalogue, now=NOW)
+
+    (depot / "pkg-a.tgz").write_bytes(b"tampered")
+
+    result = _apply(runner, depot, catalogue, plan["plan_id"])
+
+    assert result.exit_code != 0
+    assert "does not match plan" in result.output
+    assert (depot / "pkg-b.tgz").exists()
+    assert not (depot / "receipts").exists()
+
+
+
+def test_gc_apply_stops_when_an_artifact_drifts_mid_run(runner, tmp_path: Path, monkeypatch):
+    from sonic.lib import depot_gc as gc_module
+
+    depot = make_depot(tmp_path)
+    catalogue = write_catalogue(tmp_path / "catalogue.json")
+    write_manifest(
+        depot,
+        [
+            add_artifact(depot, "pkg-a1", content=b"aaa-payload"),
+            add_artifact(depot, "pkg-a2", content=b"aaa-payload"),
+            add_artifact(depot, "pkg-z1", content=b"zzz-payload"),
+            add_artifact(depot, "pkg-z2", content=b"zzz-payload"),
+        ],
+    )
+    plan = build_gc_plan(depot, catalogue_path=catalogue, now=NOW)
+    assert plan["totals"]["eligible_count"] == 2
+
+    real_unlink = gc_module.os.unlink
+    calls = []
+
+    def drifting_unlink(path):
+        calls.append(Path(path).name)
+        if len(calls) == 1:
+            (depot / "pkg-z2.tgz").write_bytes(b"zzz-payloaX")
+        real_unlink(path)
+
+    monkeypatch.setattr(gc_module.os, "unlink", drifting_unlink)
+
+    result = _apply(runner, depot, catalogue, plan["plan_id"])
+
+    assert result.exit_code == 1
+    assert "Stopped at pkg-z2" in result.output
+    assert calls == ["pkg-a2.tgz"]
+    assert not (depot / "pkg-a2.tgz").exists()
+    assert (depot / "pkg-z2.tgz").exists()
+    assert (depot / "pkg-z1.tgz").exists()
+    assert len(list((depot / "receipts").glob("*.json"))) == 1
+
+
+def test_gc_apply_reports_no_removals_when_the_plan_has_none(runner, tmp_path: Path):
+    depot = make_depot(tmp_path)
+    catalogue = write_catalogue(tmp_path / "catalogue.json")
+    write_manifest(depot, [add_artifact(depot, "pkg-a")])
+    plan = build_gc_plan(depot, catalogue_path=catalogue, now=NOW)
+    assert plan["totals"]["eligible_count"] == 0
+
+    result = _apply(runner, depot, catalogue, plan["plan_id"])
+
+    assert result.exit_code == 0, result.output
+    assert "contains no removals" in result.output
+    assert (depot / "pkg-a.tgz").exists()
+    assert not (depot / "receipts").exists()

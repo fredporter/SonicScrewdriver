@@ -131,13 +131,13 @@ def _blocked_reason(blockers: List[Dict[str, str]]) -> str:
     kinds = [blocker["kind"] for blocker in blockers]
     if "unknown_references" in kinds:
         return "unknown references — retained (a manifest, receipt, pin file or catalogue could not be read)"
+    if "integrity" in kinds:
+        detail = next(blocker["detail"] for blocker in blockers if blocker["kind"] == "integrity")
+        return f"missing integrity — retained ({detail})"
     if "pinned" in kinds:
         return "pinned — retained"
     if "referenced" in kinds:
         return "referenced by a receipt — retained"
-    if "integrity" in kinds:
-        detail = next(blocker["detail"] for blocker in blockers if blocker["kind"] == "integrity")
-        return f"missing integrity — retained ({detail})"
     return "retained"
 
 def _find_reference_cycles(edges: Dict[str, str]) -> Dict[str, List[str]]:
@@ -428,6 +428,7 @@ def build_gc_plan(
                 "declared_bytes": declared_bytes,
                 "sha256": declared_sha,
                 "added_at": str(record.get("added_at", "")),
+                "upstream_url": str(record.get("upstream_url", "")),
                 "target_profiles": list(record.get("target_profiles") or []),
                 "integrity": {"status": integrity, "detail": detail},
                 "pins": pins,
@@ -527,8 +528,17 @@ def build_gc_plan(
         if retain_days is not None:
             added = _parse_time(artifact["added_at"])
             if added is not None and moment - added > timedelta(days=retain_days):
-                artifact["reason"] = f"expired (added {artifact['added_at']})"
-                candidates.append(artifact)
+                # Expiry is a retention signal, not a licence to delete the last
+                # verified copy. A payload only goes while a verified keeper or
+                # successor remains after the plan, so an expired artifact with
+                # no such edge is retained and reported.
+                artifact["decision"] = KEEP
+                artifact["reason"] = (
+                    "expired — retained (no verified keeper or successor would remain after the plan)"
+                )
+                artifact["blockers"].append(
+                    {"kind": "sole_verified_copy", "detail": artifact["reason"]}
+                )
                 continue
 
         artifact["reason"] = "retained — no retention policy matched"
@@ -548,6 +558,9 @@ def build_gc_plan(
             requirements[artifact_id] = supersede_map[artifact_id][0]
 
     pending: Dict[str, Dict[str, Any]] = {artifact["id"]: artifact for artifact in candidates}
+
+    for artifact in artifacts:
+        artifact["requirement"] = requirements.get(artifact["id"])
 
     def keep(artifact: Dict[str, Any], kind: str, reason: str, detail: str = "") -> None:
         artifact["decision"] = KEEP
@@ -741,6 +754,7 @@ def build_gc_plan(
                 "link_count": artifact["hardlink"]["link_count"],
                 "decision": artifact["decision"],
                 "reason": artifact["reason"],
+                "requirement": artifact.get("requirement"),
                 "blockers": sorted(blocker["kind"] for blocker in artifact["blockers"]),
             }
             for artifact in sorted(artifacts, key=lambda item: item["id"])
@@ -785,3 +799,195 @@ def build_gc_plan(
         "refusals": refusals,
         "read_only": True,
     }
+
+
+class DepotGcDriftError(DepotGcError):
+    """Raised when the depot no longer matches the reviewed plan."""
+
+
+def _revalidate_artifact(root: Path, artifact: Dict[str, Any]) -> Optional[str]:
+    """Prove an artifact still matches the plan, immediately before acting on it."""
+    path, problem = _resolve_member(root, artifact["relative_path"])
+    if path is None:
+        return f"path containment failed: {problem}"
+    if path.is_symlink():
+        return "path is now a symlink"
+    try:
+        stat = path.stat()
+    except OSError as exc:
+        return f"unreadable: {exc}"
+    if not path.is_file():
+        return "no longer a regular file"
+    recorded = artifact["hardlink"]
+    if recorded["device"] is not None and stat.st_dev != recorded["device"]:
+        return "device changed since the plan"
+    if recorded["inode"] is not None and stat.st_ino != recorded["inode"]:
+        return "inode changed since the plan"
+    if stat.st_size != artifact["bytes"]:
+        return f"size changed since the plan ({stat.st_size} != {artifact['bytes']})"
+    try:
+        actual = _hash_file(path)
+    except OSError as exc:
+        return f"unreadable: {exc}"
+    if actual != artifact["sha256"]:
+        return f"digest changed since the plan ({actual[:12]}… != {artifact['sha256'][:12]}…)"
+    return None
+
+
+def _receipt_name(artifact_id: str, moment: datetime) -> str:
+    slug = "".join(ch if ch.isalnum() or ch in "._-" else "_" for ch in artifact_id)[:64]
+    return f"gc-{moment.strftime('%Y%m%dT%H%M%S%fZ')}-{slug or 'artifact'}.json"
+
+
+def _write_receipt(directory: Path, name: str, payload: Dict[str, Any]) -> Path:
+    directory.mkdir(parents=True, exist_ok=True)
+    target = directory / name
+    with open(target, "x", encoding="utf-8") as stream:
+        json.dump(payload, stream, indent=2)
+        stream.write("\n")
+    return target
+
+
+def apply_gc_plan(
+    depot_dir: Path,
+    plan_id: str,
+    *,
+    retain_days: Optional[int] = None,
+    supersede: Iterable[str] = (),
+    verify: bool = False,
+    catalogue_path: Optional[Path] = None,
+    pins_path: Optional[Path] = None,
+    now: Optional[datetime] = None,
+    receipt_dir: Optional[Path] = None,
+) -> Dict[str, Any]:
+    """Execute a reviewed plan: recompute, compare the id, revalidate, then unlink.
+
+    Every refusal happens before an unlink. The plan is recomputed from the same
+    inputs and must produce the quoted id; each removal re-proves containment,
+    inode, size and digest right before its own unlink, so a concurrent change
+    stops the run instead of deleting bytes nobody reviewed.
+    """
+    root = Path(depot_dir).expanduser()
+    if not plan_id:
+        raise DepotGcError("a reviewed plan id is required for --apply")
+    moment = now or datetime.now(timezone.utc)
+
+    plan = build_gc_plan(
+        root,
+        retain_days=retain_days,
+        supersede=supersede,
+        verify=verify,
+        catalogue_path=catalogue_path,
+        pins_path=pins_path,
+        now=moment,
+    )
+    if plan["plan_id"] != plan_id:
+        raise DepotGcDriftError(
+            f"depot does not match plan {plan_id}: the recomputed plan is "
+            f"{plan['plan_id']}; nothing was removed"
+        )
+
+    depot_root = Path(plan["depot_root"])
+    removals = [artifact for artifact in plan["artifacts"] if artifact["decision"] == REMOVE]
+    by_id = {artifact["id"]: artifact for artifact in plan["artifacts"]}
+    usage_before = shutil.disk_usage(depot_root)
+    report: Dict[str, Any] = {
+        "schema": "sonic.depot-gc-apply/1",
+        "plan_id": plan_id,
+        "removed": [],
+        "receipts": [],
+        "bytes_removed": 0,
+        "volume_before_bytes": usage_before.used,
+        "volume_after_bytes": None,
+        "measured_delta_bytes": None,
+        "stopped": None,
+        "read_only": False,
+    }
+    if not removals:
+        report["volume_after_bytes"] = usage_before.used
+        report["measured_delta_bytes"] = 0
+        return report
+
+    # Whole-plan revalidation before the first unlink: a plan that no longer
+    # holds is refused outright rather than partially executed.
+    for artifact in removals:
+        problem = _revalidate_artifact(depot_root, artifact)
+        if problem:
+            raise DepotGcDriftError(f"{artifact['id']}: {problem}; nothing was removed")
+        requirement = artifact.get("requirement")
+        if requirement:
+            keeper = by_id.get(requirement)
+            if keeper is None:
+                raise DepotGcDriftError(
+                    f"{artifact['id']}: keeper or successor {requirement} vanished; "
+                    "nothing was removed"
+                )
+            if keeper["decision"] != KEEP:
+                raise DepotGcDriftError(
+                    f"{artifact['id']}: keeper or successor {requirement} is not retained; "
+                    "nothing was removed"
+                )
+            problem = _revalidate_artifact(depot_root, keeper)
+            if problem:
+                raise DepotGcDriftError(
+                    f"{artifact['id']}: keeper or successor {requirement} drifted "
+                    f"({problem}); nothing was removed"
+                )
+
+
+    receipts_root = Path(receipt_dir).expanduser() if receipt_dir else depot_root / RECEIPTS_DIR
+    for artifact in removals:
+        # Immediate revalidation: the reviewed bytes are re-proved right here.
+        problem = _revalidate_artifact(depot_root, artifact)
+        if problem:
+            report["stopped"] = {"artifact": artifact["id"], "reason": problem}
+            break
+        path, _ = _resolve_member(depot_root, artifact["relative_path"])
+        if path is None:  # pragma: no cover - proved by _revalidate_artifact
+            report["stopped"] = {"artifact": artifact["id"], "reason": "path containment failed"}
+            break
+
+        before = shutil.disk_usage(depot_root)
+        os.unlink(path)
+        after = shutil.disk_usage(depot_root)
+        removed_at = datetime.now(timezone.utc)
+        receipt = {
+            "schema": "sonic.depot-gc-receipt/1",
+            "action": "artifact_removed",
+            "plan_id": plan_id,
+            "artifact": {
+                "id": artifact["id"],
+                "kind": artifact["kind"],
+                "version": artifact["version"],
+                "relative_path": artifact["relative_path"],
+                "bytes": artifact["bytes"],
+                "sha256": artifact["sha256"],
+                "device": artifact["hardlink"]["device"],
+                "inode": artifact["hardlink"]["inode"],
+                "link_count": artifact["hardlink"]["link_count"],
+            },
+            "reason": artifact["reason"],
+            "requirement": artifact.get("requirement"),
+            "verified_at": artifact["verified_at"],
+            "removed_at": removed_at.isoformat(),
+            "volume": {
+                "used_before_bytes": before.used,
+                "used_after_bytes": after.used,
+                "delta_bytes": before.used - after.used,
+            },
+            "recovery": artifact.get("upstream_url")
+            or "no upstream recorded; the digest above identifies the content",
+        }
+        receipt_path = _write_receipt(
+            receipts_root, _receipt_name(artifact["id"], removed_at), receipt
+        )
+        report["removed"].append(
+            {"id": artifact["id"], "bytes": artifact["bytes"], "receipt": str(receipt_path)}
+        )
+        report["receipts"].append(str(receipt_path))
+        report["bytes_removed"] += artifact["bytes"]
+
+    usage_after = shutil.disk_usage(depot_root)
+    report["volume_after_bytes"] = usage_after.used
+    report["measured_delta_bytes"] = max(usage_before.used - usage_after.used, 0)
+    return report

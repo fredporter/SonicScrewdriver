@@ -19,7 +19,13 @@ from sonic.lib.depot import (
     register_artifact,
     verify_artifact,
 )
-from sonic.lib.depot_gc import DepotGcError, build_gc_plan, format_bytes
+from sonic.lib.depot_gc import (
+    DepotGcDriftError,
+    DepotGcError,
+    apply_gc_plan,
+    build_gc_plan,
+    format_bytes,
+)
 from sonic.lib.serve import ServeError, build_artifact_index, serve_depot
 
 
@@ -230,18 +236,51 @@ def _render_gc_plan(plan: dict) -> None:
     click.echo("")
     click.echo(
         f"Plan {plan['plan_id']} is read-only. Nothing was removed. "
-        "Apply is a later milestone and must quote this plan id."
+        + (
+            "It contains no removals."
+            if totals["eligible_count"] == 0
+            else "Quote this plan id with --apply to execute it."
+        )
     )
+
+
+def _render_gc_apply(report: dict) -> None:
+    click.echo(f"Depot GC apply · plan {report['plan_id']}")
+    if not report["removed"] and not report["stopped"]:
+        click.echo("The reviewed plan contains no removals. Nothing was removed.")
+        click.echo(f"Volume used {format_bytes(report['volume_before_bytes'])} · unchanged")
+        return
+
+    for item in report["removed"]:
+        click.echo(f"  removed {item['id']} ({format_bytes(item['bytes'])}) → {item['receipt']}")
+    click.echo(
+        f"Removed {len(report['removed'])} artifact(s), "
+        f"{format_bytes(report['bytes_removed'])} of reviewed bytes"
+    )
+    click.echo(f"Receipts written: {len(report['receipts'])} (one per removal)")
+    click.echo(
+        f"Volume {format_bytes(report['volume_before_bytes'])} → "
+        f"{format_bytes(report['volume_after_bytes'])} "
+        f"(measured delta {format_bytes(report['measured_delta_bytes'])})"
+    )
+    if report["stopped"]:
+        click.secho(
+            f"Stopped at {report['stopped']['artifact']}: {report['stopped']['reason']}",
+            fg="yellow",
+            err=True,
+        )
 
 
 @depot_cmd.command("gc")
 @click.option("--depot", "depot_dir", type=click.Path(file_okay=False, path_type=Path), help="Explicit depot root")
-@click.option("--retain-days", type=click.IntRange(min=0), default=None, help="Expire artifacts added more than N days ago")
+@click.option("--retain-days", type=click.IntRange(min=0), default=None, help="Mark artifacts added more than N days ago as expired")
 @click.option("--supersede", multiple=True, metavar="OLD=NEW@VERSION", help="Declare NEW@VERSION supersedes OLD (repeatable)")
 @click.option("--verify", is_flag=True, help="Hash retained artifacts too, not only candidates and their keepers")
 @click.option("--catalogue", "catalogue_path", type=click.Path(path_type=Path), help="Layer 0 catalogue used for pins")
 @click.option("--pins", "pins_path", type=click.Path(path_type=Path), help="Local pins file (default <depot>/pins.json)")
-@click.option("--json", "as_json", is_flag=True, help="Emit the full plan document")
+@click.option("--apply", "apply_plan", is_flag=True, help="Execute the reviewed plan named by --plan-id")
+@click.option("--plan-id", "plan_id", help="Plan identifier printed by the dry run (required with --apply)")
+@click.option("--json", "as_json", is_flag=True, help="Emit the full plan or apply report")
 def gc(
     depot_dir: Optional[Path],
     retain_days: Optional[int],
@@ -249,9 +288,11 @@ def gc(
     verify: bool,
     catalogue_path: Optional[Path],
     pins_path: Optional[Path],
+    apply_plan: bool,
+    plan_id: Optional[str],
     as_json: bool,
 ):
-    """Plan retention for the depot. Read-only: prints a plan id, removes nothing."""
+    """Plan retention for the depot, or apply a plan that was reviewed first."""
     explicit = depot_dir or (os.environ.get("SONIC_DEPOT_ROOT") or "")
     if not explicit:
         click.secho(
@@ -260,6 +301,43 @@ def gc(
             err=True,
         )
         raise click.Abort()
+
+    if apply_plan and not plan_id:
+        click.secho(
+            "Applying requires the reviewed plan id: pass --plan-id from the dry run.",
+            fg="red",
+            err=True,
+        )
+        raise click.Abort()
+    if plan_id and not apply_plan:
+        click.secho("--plan-id is only meaningful with --apply.", fg="red", err=True)
+        raise click.Abort()
+
+    if apply_plan:
+        try:
+            report = apply_gc_plan(
+                Path(explicit),
+                plan_id,
+                retain_days=retain_days,
+                supersede=supersede,
+                verify=verify,
+                catalogue_path=catalogue_path,
+                pins_path=pins_path,
+            )
+        except DepotGcDriftError as exc:
+            click.secho(f"Depot GC refused: {exc}", fg="red", err=True)
+            raise click.Abort()
+        except DepotGcError as exc:
+            click.secho(f"Depot GC error: {exc}", fg="red", err=True)
+            raise click.Abort()
+
+        if as_json:
+            click.echo(json.dumps(report, indent=2))
+        else:
+            _render_gc_apply(report)
+        if report["stopped"]:
+            raise click.exceptions.Exit(1)
+        return
 
     try:
         plan = build_gc_plan(
