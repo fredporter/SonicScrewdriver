@@ -139,7 +139,10 @@ Prerequisite, now closed: `depot register` no longer has an implicit destination
 - id, kind, version, path and byte size;
 - the eligibility reason (`expired`, `superseded by <id>@<version>`, `duplicate of <id>`, `pinned — retained`);
 - last verified time, and every consumer or receipt that still references it;
-- the totals: eligible bytes, retained bytes, and the *unique* space that would actually be reclaimed (shared blocks and hardlinks counted once, not per path).
+- the totals, kept deliberately separate:
+  - **eligible artifact bytes** — the sum of the sizes of the artifacts the plan proposes to remove, which is what a human reads as "space";
+  - **estimated space reclaimed** — `0` for an artifact whose data is still reachable through another hardlink (for example the Depot copy while the installer-cache link still exists), because unlinking one name frees no file data;
+  - **measured space reclaimed** — on APFS, shared blocks and clone groups make arithmetic unreliable, so the reported figure comes from a before-and-after measurement of the volume, never from summing `st_size`.
 
 `--apply` requires the plan identifier printed by the dry run, re-verifies each artifact immediately before unlinking, refuses when a candidate is the only verified copy, pinned, or referenced, and writes one receipt per removal. No blanket prune, no implicit root, no silent deletion.
 
