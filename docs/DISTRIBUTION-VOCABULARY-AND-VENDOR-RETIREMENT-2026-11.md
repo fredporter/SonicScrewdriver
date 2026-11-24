@@ -63,7 +63,14 @@ Measured on 2026-11-24 for NanoCoder 1.30.0:
 
 Rule: **an artifact is provenance and a verification gate; the offline unit is the verified tarball plus a pinned dependency bundle.** The installer now installs from the retained tarball path rather than the registry name, and accepts `--deps <bundle|dir>`; `--build-deps` produces the bundle from one clean online install.
 
-Measured bundle: the resolved dependency cache is 199 MB and compresses to a 79,618,918-byte `tar.gz` (`sha256 d7c9223d…71ff`). It is built from a `package-lock.json` (`nanocoder-1.30.0-deps-lock.json`) with `npm ci`, and the installer verifies the bundle's digest from the `<bundle>.sha256` sidecar before extracting it. Rebuilding refuses to overwrite an existing bundle without `--rebuild-deps`, so the dependency set cannot drift silently. Proven end to end in a fresh `UDOS_HOME` with `npm_config_cache` pointing at an empty directory and `--offline`: 351 packages, both patches applied, installed version asserted, and the installed package diffed against the verified archive. A one-byte change to the bundle aborts the install before anything is extracted.
+Measured bundle: the resolved dependency cache is 199 MB and compresses to a 79,618,918-byte `tar.gz` (`sha256 d7c9223d…71ff`). Trust chain:
+
+1. **The pin is authoritative.** `EXPECTED_DEPS_SHA256` and `EXPECTED_DEPS_BYTES` are reviewed constants in the installer — the same source that already pins the package tarball.
+2. **The Layer 0 catalogue must agree.** The installer reads the `nanocoder-npm-cache` digest from `distribution_catalogue.json`; a disagreement aborts the install.
+3. **A sidecar may only confirm.** `<bundle>.sha256` is still written and checked, but it is compared *against* the pin, so replacing the bundle and its sidecar together changes nothing.
+4. **The dependency set is versioned.** `vendor/nanocoder-1.30.0-deps-lock.json` is committed, and `--build-deps` installs with `npm ci`; an existing bundle is not overwritten without `--rebuild-deps`, and a missing lock is an error rather than an invitation to re-resolve.
+
+Proofs: a one-byte change to the bundle aborts before extraction; a forged bundle **plus a matching replacement sidecar** is rejected with `Dependency bundle does not match the pinned release digest`, exit 1, nothing extracted; a fresh `UDOS_HOME` with an empty npm cache completes the offline install (351 packages, both patches, version and byte-identity asserted).
 
 Caveat worth knowing: npm cache keys include the registry URL, so the bundle must be built against the same registry used at install time. Building from `registry.npmjs.org` and installing with a different `npm_config_registry` fails with `ENOTCACHED` — that is a cache-key mismatch, not corruption. The bundle ships in the Depot as artifact `nanocoder-npm-cache` and is declared in the catalogue seed beside the tarball.
 
@@ -122,4 +129,17 @@ GridCore notes are read-only. Curation (register, prune, approve an update) happ
 - Decided: schema and CLI live in Sonic; the distributable base catalogue is a Layer 0 seed in `global-knowledge/datasets/`; the local instance (retention, verification, receipts) lives in the Depot and is never committed.
 - Open: whether a portable capsule set needs its own extension (`.capsule-set`) or is a directory of capsules plus one manifest. Recommendation: directory + manifest, no new extension.
 - Open: encryption at rest for removable media — host-managed volume (APFS/LUKS) recorded in the manifest; Sonic adds no crypto.
+
+## 8. Next: retention GC (not yet implemented)
+
+Prerequisite, now closed: `depot register` no longer has an implicit destination. It requires `--depot` or `SONIC_DEPOT_ROOT`, so nothing can be written to an unintended root before deletion logic exists.
+
+`sonic depot gc` starts in **dry-run by default** and must report, per artifact:
+
+- id, kind, version, path and byte size;
+- the eligibility reason (`expired`, `superseded by <id>@<version>`, `duplicate of <id>`, `pinned — retained`);
+- last verified time, and every consumer or receipt that still references it;
+- the totals: eligible bytes, retained bytes, and the *unique* space that would actually be reclaimed (shared blocks and hardlinks counted once, not per path).
+
+`--apply` requires the plan identifier printed by the dry run, re-verifies each artifact immediately before unlinking, refuses when a candidate is the only verified copy, pinned, or referenced, and writes one receipt per removal. No blanket prune, no implicit root, no silent deletion.
 
