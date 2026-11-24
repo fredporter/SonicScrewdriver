@@ -130,14 +130,14 @@ GridCore notes are read-only. Curation (register, prune, approve an update) happ
 - Open: whether a portable capsule set needs its own extension (`.capsule-set`) or is a directory of capsules plus one manifest. Recommendation: directory + manifest, no new extension.
 - Open: encryption at rest for removable media — host-managed volume (APFS/LUKS) recorded in the manifest; Sonic adds no crypto.
 
-## 8. Next: retention GC (not yet implemented)
+## 8. Retention GC
 
 Prerequisite, now closed: `depot register` no longer has an implicit destination. It requires `--depot` or `SONIC_DEPOT_ROOT`, so nothing can be written to an unintended root before deletion logic exists.
 
 `sonic depot gc` starts in **dry-run by default** and must report, per artifact:
 
 - id, kind, version, path and byte size;
-- the eligibility reason (`expired`, `superseded by <id>@<version>`, `duplicate of <id>`, `pinned — retained`);
+- the eligibility reason (`superseded by <id>@<version>`, `duplicate of <id>`, or a retention reason such as `pinned — retained` and `expired — retained (…)`);
 - last verified time, and every consumer or receipt that still references it;
 - the totals, kept deliberately separate:
   - **eligible artifact bytes** — the sum of the sizes of the artifacts the plan proposes to remove, which is what a human reads as "space";
@@ -148,9 +148,9 @@ Prerequisite, now closed: `depot register` no longer has an implicit destination
 
 ### 8.1 Read-only dry run (implemented 2026-11-24)
 
-`sonic depot gc` is dry-run only. It writes nothing, unlinks nothing and has no
-`--apply` flag yet: passing one is a usage error, so a half-built apply cannot
-be reached by habit.
+`sonic depot gc` is a dry run unless `--apply` names a reviewed plan id. The dry
+run writes nothing and unlinks nothing; `--apply` is refused without a plan id,
+so a plan cannot be executed from memory or from a half-remembered command.
 
 ```sh
 cd ~/Code/SonicScrewdriver/cli
@@ -158,6 +158,7 @@ python3 -m sonic.cli depot gc --depot ~/Code/Depot
 python3 -m sonic.cli depot gc --depot ~/Code/Depot --json
 python3 -m sonic.cli depot gc --depot ~/Code/Depot --retain-days 90 --verify
 python3 -m sonic.cli depot gc --depot ~/Code/Depot --supersede old-id=new-id@1.4.0
+python3 -m sonic.cli depot gc --depot ~/Code/Depot --apply --plan-id gc-…
 ```
 
 The plan document (`sonic.depot-gc-plan/1`) carries a stable `plan_id`: the
@@ -169,11 +170,13 @@ compared with the reviewed plan.
 Per artifact the plan reports id, kind, version, path, bytes, the recorded
 digest, `last_verified_at` (from evidence, or the plan's own hash time), every
 pin with its source, every receipt that still references the artifact, the
-hardlink device/inode/link count, and one reason string. Reasons are
-`expired`, `superseded by <id>@<version>`, `duplicate of <id>`,
-`pinned — retained`, `referenced by a receipt — retained`,
-`missing integrity — retained (<detail>)` and
-`unknown references — retained (...)`.
+hardlink device/inode/link count, the `requirement` (the keeper or successor
+that has to survive), and one reason string. Removal reasons are
+`superseded by <id>@<version>` and `duplicate of <id>` only. Retention reasons
+include `pinned — retained`, `referenced by a receipt — retained`,
+`missing integrity — retained (<detail>)`, `unknown references — retained (...)`
+and `expired — retained (no verified keeper or successor would remain after the
+plan)`.
 
 Refusal rules, in order:
 
@@ -196,7 +199,10 @@ Refusal rules, in order:
 5. **Sole verified copy.** A duplicate is only eligible while the copy that
    would remain hashes clean. If it does not, the candidate is retained as the
    only verified copy. A superseded artifact waits until its successor
-   verifies.
+   verifies. Expiry is a retention signal, never a licence to delete the last
+   copy: an artifact past `--retain-days` is retained as
+   `expired — retained (…)` unless a verified keeper or successor remains after
+   the plan, which is why expiry alone never appears as a removal reason.
 6. **Retention closure.** A removal additionally requires that the keeper or
    successor it points at is *retained by this same plan*. The removal set is
    pruned to a fixed point: a candidate whose keeper or successor is also a
@@ -225,19 +231,59 @@ Byte accounting keeps the three figures apart, as §8 requires:
 Unregistered files, other application stores, Docker volumes and the Trash are
 outside the inventory: the plan reads the manifest and nothing else.
 
-Evidence: `cli/tests/test_depot_gc.py` (22 tests, disposable depots) covers the
+Evidence: `cli/tests/test_depot_gc.py` (29 tests, disposable depots) covers the
 explicit-root refusal, flat and nested manifest paths, path containment,
 missing files, size mismatches, tampering, catalogue and local pins, receipt
 references in nested receipt directories, unreadable inputs, duplicates,
-hardlinks, expiry, supersession, plan-id stability, immutability of the depot
-across a verified run, and the retention-closure regressions: a keeper that
-also expires, a successor that also expires, self-supersession, successor
-cycles and a multi-step successor chain. One test asserts that the retired
-`~/Code/Vendor` lane is not rediscovered. The live depot plan reports both
-NanoCoder artifacts as `pinned — retained` with `link_count = 2`, eligible
-bytes `0` and estimated reclaimable `0`, which is the honest answer.
+hardlinks, expiry retention, supersession, plan-id stability, immutability of
+the depot across a verified run, the retention-closure regressions
+(self-supersession, successor cycles, a multi-step successor chain), the
+"expired but still the only verified copy" case, and apply: plan-id matching,
+candidate and keeper drift, a drift that appears mid-run, one receipt per
+removal and an empty plan. Two tests pin the retired `~/Code/Vendor` lane and
+`depot list` discovery. The live depot plan reports both NanoCoder artifacts as
+`pinned — retained` with `link_count = 2`, eligible bytes `0` and estimated
+reclaimable `0`, which is the honest answer.
 
-Remaining before apply: quote the reviewed plan id, revalidate bytes, digests,
-pins, references and containment immediately before each unlink, tolerate
-concurrent changes, write one receipt per removal, and measure the volume
-before and after to report the real delta.
+### 8.2 Apply (implemented 2026-11-24)
+
+`--apply` executes exactly one reviewed plan. It is refused without `--plan-id`,
+and it recomputes the plan from the same inputs before touching anything, so a
+quoted id that does not match the current depot aborts with
+`does not match plan …; nothing was removed`. The policy flags used to build the
+plan (`--retain-days`, `--supersede`, `--verify`, `--catalogue`, `--pins`) are
+part of the digest, so apply must be given the same flags.
+
+Before the first unlink every candidate is revalidated: path containment, no
+symlink, regular file, unchanged device and inode, unchanged size and a fresh
+SHA-256. Its `requirement` must still exist, still be retained by the plan and
+still hash clean. Any failure refuses the whole run with nothing removed.
+
+Immediately before each individual unlink the same revalidation runs again. If
+the file drifted since the plan, the run stops, reports
+`Stopped at <id>: digest changed since the plan …`, leaves the file in place and
+exits non-zero; removals already completed keep their receipts, so the report
+always describes what actually happened.
+
+Each removal writes one receipt, `receipts/gc-<utc>-<id>.json`
+(`sonic.depot-gc-receipt/1`), holding the plan id, artifact id/kind/version/
+path/bytes/SHA-256/device/inode/link count, the reason, the requirement, the
+verification time, the removal time, the measured volume before and after that
+specific unlink, and a recovery note (the manifest's upstream URL, or the digest
+when no upstream was recorded).
+
+The report (`sonic.depot-gc-apply/1`) lists what was removed with its receipt,
+the reviewed bytes removed, the receipt count, the volume before and after, the
+measured delta and any `stopped` reason. A plan with no removals returns without
+creating a receipts directory.
+
+Apply removes bytes and writes receipts; it does not rewrite the manifest. A
+removed entry therefore still appears in later plans as a missing file (and is
+also caught by its own removal receipt), so manifest reconciliation stays a
+separate reviewed step instead of an implicit write inside the deletion path.
+
+Evidence: six apply tests run only against disposable depots — one removal with a
+receipt, a plan-id mismatch, candidate drift, keeper drift, a drift injected
+between two removals (one receipt, second file retained), and an empty plan. No
+live apply has been run: `~/Code/Depot` is untouched and its plan currently
+contains no removals.
