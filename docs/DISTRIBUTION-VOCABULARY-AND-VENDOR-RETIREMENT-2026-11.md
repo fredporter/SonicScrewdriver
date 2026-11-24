@@ -45,7 +45,7 @@ Sequence (one reviewed change, not a sweep):
 2. Export manifest + index JSON to a single catalogue snapshot and store it as a retained Depot artifact (hashed, receipts recorded).
 3. For each RAW clone: confirm no local-only commits, record `upstream_url` + `resolved_ref`, delete.
 4. For each STUDIED/INTEGRATED entry: confirm the adopted code exists in its owning repo; promote first if not.
-5. Update the policy text that still names Vendor: workspace `AGENTS.md` ("shared caches … `Code/Vendor/01-RAW`", "Vendor is the upstream source catalogue"), `Vendor/README.md`, `vendor_hygiene_check.py`, and the `Vendor/01-RAW` root in `sonic.lib.depot.get_default_depot_roots()`.
+5. Update the policy text that still names Vendor: workspace `AGENTS.md` ("shared caches … `Code/Vendor/01-RAW`", "Vendor is the upstream source catalogue"), `Vendor/README.md`, `vendor_hygiene_check.py`, and the `Vendor/01-RAW` root in `sonic.lib.depot.get_default_depot_roots()`. **Sonic's discovery root is removed (2026-11-24):** `get_default_depot_roots()` now returns only an explicit `SONIC_DEPOT_ROOT` and the UDOS_HOME depot, so a retired lane cannot re-enter retention or GC inventory.
 6. Remove the directory. Provenance survives in the catalogue; payloads survive only where a consumer needs them.
 
 Licence and attribution obligations are satisfied by the catalogue record (`upstream_url`, `license`, `resolved_ref`), not by keeping an unverified copy on disk.
@@ -197,6 +197,18 @@ Refusal rules, in order:
    would remain hashes clean. If it does not, the candidate is retained as the
    only verified copy. A superseded artifact waits until its successor
    verifies.
+6. **Retention closure.** A removal additionally requires that the keeper or
+   successor it points at is *retained by this same plan*. The removal set is
+   pruned to a fixed point: a candidate whose keeper or successor is also a
+   candidate is dropped, and the keeper is then protected as well, so a plan
+   cannot invert a pair and remove the copy it just called the keeper. This is
+   what stops a keeper that also expires from taking the payload with it.
+   Two declarations are refused outright rather than resolved by ordering:
+   self-supersession (`--supersede pkg=pkg@1.0.0`, blocked as `self_reference`)
+   and reference cycles (`--supersede a=b@…` with `--supersede b=a@…`, blocked
+   as `reference_cycle` with the path, for example `pkg-a → pkg-b → pkg-a`).
+   Chain declarations (`a→b`, `b→c`) keep both `a` and `b`: `b` is `a`'s
+   successor, so it cannot be removed while `a`'s lineage depends on it.
 
 Byte accounting keeps the three figures apart, as §8 requires:
 
@@ -213,14 +225,17 @@ Byte accounting keeps the three figures apart, as §8 requires:
 Unregistered files, other application stores, Docker volumes and the Trash are
 outside the inventory: the plan reads the manifest and nothing else.
 
-Evidence: `cli/tests/test_depot_gc.py` (16 tests, disposable depots) covers the
+Evidence: `cli/tests/test_depot_gc.py` (22 tests, disposable depots) covers the
 explicit-root refusal, flat and nested manifest paths, path containment,
 missing files, size mismatches, tampering, catalogue and local pins, receipt
 references in nested receipt directories, unreadable inputs, duplicates,
-hardlinks, expiry, supersession, plan-id stability and immutability of the
-depot across a verified run. The live depot plan reports both NanoCoder
-artifacts as `pinned — retained` with `link_count = 2`, eligible bytes `0` and
-estimated reclaimable `0`, which is the honest answer.
+hardlinks, expiry, supersession, plan-id stability, immutability of the depot
+across a verified run, and the retention-closure regressions: a keeper that
+also expires, a successor that also expires, self-supersession, successor
+cycles and a multi-step successor chain. One test asserts that the retired
+`~/Code/Vendor` lane is not rediscovered. The live depot plan reports both
+NanoCoder artifacts as `pinned — retained` with `link_count = 2`, eligible
+bytes `0` and estimated reclaimable `0`, which is the honest answer.
 
 Remaining before apply: quote the reviewed plan id, revalidate bytes, digests,
 pins, references and containment immediately before each unlink, tolerate
