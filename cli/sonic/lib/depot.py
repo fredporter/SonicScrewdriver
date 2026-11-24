@@ -3,7 +3,8 @@
 Per user directive & uDOS Refactor Plan:
 - Build and maintain an offline library of latest installers, ISOs, patches, and firmware.
 - Decentralized server: download once, verify SHA-256, and serve locally across LAN.
-- Maps to local storage sources (including ~/Code/Vendor/01-RAW and UDOS_HOME/depot).
+- Resolves only an explicit depot root or the retained UDOS_HOME depot; the
+  retired ~/Code/Vendor lane is not a storage source and must not be rediscovered.
 - Eliminates cloud reliance, bandwidth waste, and external download delays during device revival.
 """
 
@@ -71,18 +72,18 @@ def compute_sha256(path: Path) -> str:
 
 
 def get_default_depot_roots() -> List[Path]:
-    """Discover candidate local storage depots in order of priority."""
+    """Discover candidate local storage depots in order of priority.
+
+    ``~/Code/Vendor`` is gone: retained payloads live in the Depot reached through
+    SONIC_DEPOT_ROOT or the UDOS_HOME depot. Rediscovering a retired lane would
+    let an unregistered tree back into the inventory.
+    """
     roots: List[Path] = []
 
     # Explicit environment variable
     env_root = os.environ.get("SONIC_DEPOT_ROOT")
     if env_root and Path(env_root).is_dir():
         roots.append(Path(env_root).resolve())
-
-    # Vendor folder in Code directory (~/Code/Vendor/01-RAW)
-    vendor_raw = Path.home() / "Code" / "Vendor" / "01-RAW"
-    if vendor_raw.is_dir():
-        roots.append(vendor_raw.resolve())
 
     # UDOS state depot (~/Code/.udos/sonic/depot)
     udos_depot = (state_root() / "depot").resolve()

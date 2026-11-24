@@ -140,6 +140,32 @@ def _blocked_reason(blockers: List[Dict[str, str]]) -> str:
         return f"missing integrity — retained ({detail})"
     return "retained"
 
+def _find_reference_cycles(edges: Dict[str, str]) -> Dict[str, List[str]]:
+    """Return every node that sits in a requirement cycle, with its cycle path."""
+    cycles: Dict[str, List[str]] = {}
+    state: Dict[str, int] = {}
+    stack: List[str] = []
+
+    def visit(node: str) -> None:
+        state[node] = 1
+        stack.append(node)
+        successor = edges.get(node)
+        if successor is not None and successor in edges:
+            if state.get(successor) == 1:
+                path = stack[stack.index(successor):] + [successor]
+                for member in path[:-1]:
+                    cycles.setdefault(member, path)
+            elif state.get(successor, 0) == 0:
+                visit(successor)
+        stack.pop()
+        state[node] = 2
+
+    for node in sorted(edges):
+        if state.get(node, 0) == 0:
+            visit(node)
+    return cycles
+
+
 def _load_manifest(root: Path) -> Tuple[List[Dict[str, Any]], List[str]]:
     path = root / MANIFEST_FILE
     if not path.is_file():
@@ -508,6 +534,79 @@ def build_gc_plan(
         artifact["reason"] = "retained — no retention policy matched"
 
 
+    # ---- retention closure -------------------------------------------------
+    # A removal is only safe while the copy that keeps its content is retained by
+    # the same plan. A verified keeper that is itself scheduled for removal would
+    # take the payload with it, so the removal set is pruned to a fixed point, and
+    # self-references and cycles are refused outright.
+    requirements: Dict[str, str] = {}
+    for artifact in candidates:
+        artifact_id = artifact["id"]
+        if artifact_id in duplicate_of:
+            requirements[artifact_id] = duplicate_of[artifact_id]
+        elif artifact_id in supersede_map:
+            requirements[artifact_id] = supersede_map[artifact_id][0]
+
+    pending: Dict[str, Dict[str, Any]] = {artifact["id"]: artifact for artifact in candidates}
+
+    def keep(artifact: Dict[str, Any], kind: str, reason: str, detail: str = "") -> None:
+        artifact["decision"] = KEEP
+        artifact["reason"] = reason
+        artifact["blockers"].append({"kind": kind, "detail": detail or reason})
+        pending.pop(artifact["id"], None)
+
+    for artifact_id in sorted(list(pending)):
+        if requirements.get(artifact_id) == artifact_id:
+            keep(
+                pending[artifact_id],
+                "self_reference",
+                "superseded by itself — retained (no distinct successor)",
+            )
+
+    cycles = _find_reference_cycles(
+        {
+            artifact_id: requirement
+            for artifact_id, requirement in requirements.items()
+            if artifact_id in pending
+        }
+    )
+    for artifact_id, path in sorted(cycles.items()):
+        if artifact_id in pending:
+            keep(
+                pending[artifact_id],
+                "reference_cycle",
+                f"reference cycle — retained ({' → '.join(path)})",
+            )
+
+    changed = True
+    while changed:
+        changed = False
+        # A candidate whose keeper or successor is also a candidate cannot go:
+        # the copy that would preserve its content sits in the same removal set.
+        for artifact_id in sorted(list(pending)):
+            requirement = requirements.get(artifact_id)
+            if requirement and requirement in pending:
+                keep(
+                    pending[artifact_id],
+                    "unretained_reference",
+                    f"required copy {requirement} is also scheduled for removal — retained",
+                )
+                changed = True
+        # ...and the keeper stays too, so the plan cannot invert the pair and
+        # remove the copy it just called the keeper.
+        dependents: Dict[str, List[str]] = {}
+        for artifact_id, requirement in requirements.items():
+            if artifact_id not in pending:
+                dependents.setdefault(requirement, []).append(artifact_id)
+        for requirement in sorted(dependents):
+            if requirement in pending:
+                keep(
+                    pending[requirement],
+                    "keeper_required",
+                    f"keeper/successor for {', '.join(sorted(dependents[requirement]))} — retained",
+                )
+                changed = True
+
     # ---- cryptographic confirmation ---------------------------------------
     def confirm(artifact: Dict[str, Any]) -> Optional[str]:
         if not artifact["path"] or artifact["integrity"]["status"] not in {"unverified", "verified"}:
@@ -526,40 +625,44 @@ def build_gc_plan(
         artifact["verified_at"] = moment.isoformat()
         return None
 
-    confirmed: List[Dict[str, Any]] = []
-    for artifact in candidates:
+    final: List[Dict[str, Any]] = []
+    for artifact_id in sorted(pending):
+        artifact = pending[artifact_id]
         failure = confirm(artifact)
         if failure:
-            artifact["decision"] = KEEP
-            artifact["reason"] = f"missing integrity — retained ({failure})"
-            artifact["blockers"].append({"kind": "integrity", "detail": failure})
+            keep(artifact, "integrity", f"missing integrity — retained ({failure})", failure)
             continue
-        confirmed.append(artifact)
-    candidates = confirmed
 
-    # A removal is only safe while the content it duplicates stays verified.
-    final: List[Dict[str, Any]] = []
-    for artifact in candidates:
-        if artifact["id"] in duplicate_of:
-            keeper = by_id[duplicate_of[artifact["id"]]]
+        requirement = requirements.get(artifact_id)
+        if requirement:
+            keeper = by_id[requirement]
             failure = confirm(keeper)
             if failure:
-                artifact["decision"] = KEEP
-                artifact["reason"] = (
-                    f"duplicate of {keeper['id']} — retained as the only verified copy ({failure})"
-                )
-                artifact["blockers"].append({"kind": "sole_verified_copy", "detail": failure})
+                if artifact_id in duplicate_of:
+                    keep(
+                        artifact,
+                        "sole_verified_copy",
+                        f"duplicate of {requirement} — retained as the only verified copy "
+                        f"({failure})",
+                        failure,
+                    )
+                else:
+                    keep(
+                        artifact,
+                        "unverified_successor",
+                        f"superseded by {requirement} — retained until the successor verifies "
+                        f"({failure})",
+                        failure,
+                    )
                 continue
-        if artifact["id"] in supersede_map:
-            new_id = supersede_map[artifact["id"]][0]
-            failure = confirm(by_id[new_id])
-            if failure:
-                artifact["decision"] = KEEP
-                artifact["reason"] = (
-                    f"superseded by {new_id} — retained until the successor verifies ({failure})"
+            if keeper["decision"] != KEEP:
+                keep(
+                    artifact,
+                    "unretained_reference",
+                    f"required copy {requirement} is not retained — kept",
                 )
-                artifact["blockers"].append({"kind": "unverified_successor", "detail": failure})
                 continue
+
         artifact["decision"] = REMOVE
         final.append(artifact)
 

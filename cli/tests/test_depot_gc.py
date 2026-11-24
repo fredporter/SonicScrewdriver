@@ -403,3 +403,125 @@ def test_gc_cli_prints_a_plan_and_has_no_apply(runner, tmp_path: Path):
         cli, ["depot", "gc", "--depot", str(depot), "--catalogue", str(catalogue), "--apply"]
     )
     assert apply_attempt.exit_code != 0
+
+
+def test_gc_keeper_that_also_expires_retains_both(tmp_path: Path):
+    depot = make_depot(tmp_path)
+    catalogue = write_catalogue(tmp_path / "catalogue.json")
+    old = (NOW - timedelta(days=40)).isoformat()
+    write_manifest(
+        depot,
+        [add_artifact(depot, "pkg-a", added_at=old), add_artifact(depot, "pkg-b", added_at=old)],
+    )
+
+    plan = _plan(depot, catalogue, retain_days=30)
+
+    keeper = _artifact(plan, "pkg-a")
+    duplicate = _artifact(plan, "pkg-b")
+    assert plan["totals"]["eligible_count"] == 0
+    assert keeper["decision"] == "keep"
+    assert duplicate["decision"] == "keep"
+    assert duplicate["reason"] == "required copy pkg-a is also scheduled for removal — retained"
+    assert keeper["reason"] == "keeper/successor for pkg-b — retained"
+    assert plan["refusals"]["unretained_reference"] == ["pkg-b"]
+    assert plan["refusals"]["keeper_required"] == ["pkg-a"]
+
+
+def test_gc_refuses_self_supersession(tmp_path: Path):
+    depot = make_depot(tmp_path)
+    catalogue = write_catalogue(tmp_path / "catalogue.json")
+    write_manifest(depot, [add_artifact(depot, "pkg")])
+
+    plan = _plan(depot, catalogue, supersede=["pkg=pkg@1.0.0"])
+
+    artifact = _artifact(plan, "pkg")
+    assert artifact["decision"] == "keep"
+    assert artifact["reason"] == "superseded by itself — retained (no distinct successor)"
+    assert plan["refusals"]["self_reference"] == ["pkg"]
+    assert plan["totals"]["eligible_count"] == 0
+
+
+def test_gc_refuses_successor_cycles(tmp_path: Path):
+    depot = make_depot(tmp_path)
+    catalogue = write_catalogue(tmp_path / "catalogue.json")
+    write_manifest(
+        depot,
+        [
+            add_artifact(depot, "pkg-a", content=b"alpha"),
+            add_artifact(depot, "pkg-b", content=b"bravo"),
+        ],
+    )
+
+    plan = _plan(
+        depot,
+        catalogue,
+        supersede=["pkg-a=pkg-b@1.0.0", "pkg-b=pkg-a@1.0.0"],
+    )
+
+    first = _artifact(plan, "pkg-a")
+    second = _artifact(plan, "pkg-b")
+    assert plan["totals"]["eligible_count"] == 0
+    assert first["decision"] == "keep" and second["decision"] == "keep"
+    assert first["reason"] == "reference cycle — retained (pkg-a → pkg-b → pkg-a)"
+    assert second["reason"] == "reference cycle — retained (pkg-a → pkg-b → pkg-a)"
+    assert sorted(plan["refusals"]["reference_cycle"]) == ["pkg-a", "pkg-b"]
+
+
+def test_gc_chain_never_removes_its_own_successor(tmp_path: Path):
+    depot = make_depot(tmp_path)
+    catalogue = write_catalogue(tmp_path / "catalogue.json")
+    write_manifest(
+        depot,
+        [
+            add_artifact(depot, "pkg-a", content=b"alpha"),
+            add_artifact(depot, "pkg-b", version="2.0.0", content=b"bravo"),
+            add_artifact(depot, "pkg-c", version="3.0.0", content=b"charlie"),
+        ],
+    )
+
+    plan = _plan(
+        depot,
+        catalogue,
+        supersede=["pkg-a=pkg-b@2.0.0", "pkg-b=pkg-c@3.0.0"],
+    )
+
+    assert plan["totals"]["eligible_count"] == 0
+    assert _artifact(plan, "pkg-c")["decision"] == "keep"
+    assert _artifact(plan, "pkg-a")["reason"] == (
+        "required copy pkg-b is also scheduled for removal — retained"
+    )
+    assert _artifact(plan, "pkg-b")["reason"] == "keeper/successor for pkg-a — retained"
+
+
+def test_gc_successor_that_also_expires_retains_the_pair(tmp_path: Path):
+    depot = make_depot(tmp_path)
+    catalogue = write_catalogue(tmp_path / "catalogue.json")
+    old = (NOW - timedelta(days=40)).isoformat()
+    write_manifest(
+        depot,
+        [
+            add_artifact(depot, "pkg-a", added_at=old),
+            add_artifact(depot, "pkg-b", version="2.0.0", content=b"successor", added_at=old),
+        ],
+    )
+
+    plan = _plan(depot, catalogue, retain_days=30, supersede=["pkg-a=pkg-b@2.0.0"])
+
+    assert plan["totals"]["eligible_count"] == 0
+    assert _artifact(plan, "pkg-a")["reason"] == (
+        "required copy pkg-b is also scheduled for removal — retained"
+    )
+    assert _artifact(plan, "pkg-b")["reason"] == "keeper/successor for pkg-a — retained"
+
+
+def test_default_depot_roots_exclude_the_retired_vendor_lane(monkeypatch, tmp_path: Path):
+    from sonic.lib import depot as depot_module
+
+    monkeypatch.delenv("SONIC_DEPOT_ROOT", raising=False)
+    monkeypatch.setenv("UDOS_HOME", str(tmp_path / "udos"))
+
+    roots = depot_module.get_default_depot_roots()
+
+    assert roots
+    assert all("Vendor" not in str(root) for root in roots)
+    assert roots[-1] == (tmp_path / "udos" / "sonic" / "depot").resolve()
