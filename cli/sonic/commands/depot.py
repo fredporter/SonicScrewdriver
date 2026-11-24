@@ -6,20 +6,19 @@ Download once locally and serve across the home network.
 
 from __future__ import annotations
 
-import http.server
 import json
-import socketserver
+import os
 from pathlib import Path
 from typing import Optional
 import click
 
 from sonic.lib.depot import (
     DepotError,
-    get_default_depot_roots,
     list_artifacts,
     register_artifact,
     verify_artifact,
 )
+from sonic.lib.serve import ServeError, build_artifact_index, serve_depot
 
 
 @click.group("depot")
@@ -116,26 +115,41 @@ def verify(artifact_id: str, depot_dir: Optional[Path]):
 
 
 @depot_cmd.command("serve")
-@click.option("--port", "-p", default=8088, help="Port to serve offline depot on")
-def serve(port: int):
-    """Serve offline depot artifacts over local network for other nodes (decentralized server)."""
-    roots = get_default_depot_roots()
-    primary_root = next((r for r in roots if r.exists()), None)
-    if not primary_root:
-        click.secho("No existing depot directory found.", fg="red", err=True)
+@click.option("--depot", "depot_dir", type=click.Path(file_okay=False, path_type=Path), help="Explicit artifact root (required)")
+@click.option("--port", "-p", default=8088, show_default=True, help="Port to serve the depot on")
+@click.option("--host", default="127.0.0.1", show_default=True, help="Bind address; loopback by default")
+@click.option("--lan", is_flag=True, help="Bind all interfaces (0.0.0.0); a deliberate LAN publication")
+@click.option("--no-verify", is_flag=True, help="Skip per-file checksum verification")
+def serve(depot_dir: Optional[Path], port: int, host: str, lan: bool, no_verify: bool):
+    """Serve only the artifacts registered in the depot manifest."""
+    explicit = depot_dir or (os.environ.get("SONIC_DEPOT_ROOT") or "")
+    if not explicit:
+        click.secho(
+            "An explicit artifact root is required: pass --depot or set SONIC_DEPOT_ROOT.",
+            fg="red",
+            err=True,
+        )
         raise click.Abort()
 
-    class Handler(http.server.SimpleHTTPRequestHandler):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, directory=str(primary_root), **kwargs)
-
-    click.secho(f"Starting Sonic Decentralized Depot Server on port {port}...", fg="green")
-    click.echo(f"Serving from: {primary_root}")
-    click.echo("Other machines on the LAN can pull installers directly at local gigabit speeds without internet access.")
-    click.echo("Press Ctrl+C to stop.")
+    root = Path(explicit).expanduser()
+    bind = "0.0.0.0" if lan else host
 
     try:
-        with socketserver.TCPServer(("", port), Handler) as httpd:
-            httpd.serve_forever()
+        index = build_artifact_index(root)
+    except ServeError as exc:
+        click.secho(f"Depot serve error: {exc}", fg="red", err=True)
+        raise click.Abort()
+
+    click.secho(f"Serving {len(index)} registered artifact(s) from {root}", fg="green")
+    click.echo(f"Listening on http://{bind}:{port}")
+    if bind != "127.0.0.1":
+        click.secho("Warning: this is visible on the network. Only registered artifacts are exposed.", fg="yellow")
+    click.echo("Unregistered files, directories and paths outside the root are not reachable. Ctrl+C stops.")
+
+    try:
+        serve_depot(root, host=bind, port=port, verify=not no_verify)
+    except ServeError as exc:
+        click.secho(f"Depot serve error: {exc}", fg="red", err=True)
+        raise click.Abort()
     except KeyboardInterrupt:
         click.echo("\nServer stopped.")
