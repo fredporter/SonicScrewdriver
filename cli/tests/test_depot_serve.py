@@ -6,12 +6,14 @@ import hashlib
 import http.client
 import inspect
 import http.server
+import os
 import threading
 from pathlib import Path
 
 import pytest
 from click.testing import CliRunner
 
+import sonic.lib.serve as serve_module
 from sonic.cli import cli
 from sonic.lib.depot import DepotRecord, save_depot_manifest
 from sonic.lib.serve import build_artifact_index, create_handler, serve_depot
@@ -127,6 +129,30 @@ def test_head_has_no_body(depot_server: int):
     assert response.status == 200
     assert body == b""
     assert response.getheader("Content-Length") == str(len(ALPHA))
+
+
+def test_change_after_first_response_is_detected(served_depot: Path, depot_server: int):
+    first, body = request(depot_server, "/alpha.bin")
+    assert first.status == 200
+    assert body == ALPHA
+
+    # Rewrite through a hardlink: same inode, so a path-only check cannot help.
+    alias = served_depot / "alpha-alias.bin"
+    os.link(served_depot / "alpha.bin", alias)
+    alias.write_bytes(b"BRAVO-PAYLOAD")  # deliberately the same length
+
+    second, tampered = request(depot_server, "/alpha.bin")
+    assert second.status == 500
+    assert b"BRAVO" not in tampered
+
+
+def test_verification_is_per_request_and_tied_to_the_served_descriptor():
+    source = inspect.getsource(serve_module)
+
+    assert "checked" not in source, "verification must not be cached across requests"
+    assert "os.fstat(stream.fileno())" in source, "size must come from the opened descriptor"
+    assert "stream.seek(0)" in source, "the hashed bytes must be the served bytes"
+    assert "compute_sha256" not in source, "hashing must use the open stream, not a second open"
 
 
 def test_tampered_artifact_is_refused(served_depot: Path):

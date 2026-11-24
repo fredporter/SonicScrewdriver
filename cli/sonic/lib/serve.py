@@ -7,13 +7,15 @@ root can be requested. Serving is a retention-safe read: nothing is written.
 
 from __future__ import annotations
 
+import hashlib
 import http.server
 import mimetypes
+import os
 import urllib.parse
 from pathlib import Path
 from typing import Callable, Dict, Optional, Tuple
 
-from sonic.lib.depot import compute_sha256, load_depot_manifest
+from sonic.lib.depot import load_depot_manifest
 
 ArtifactIndex = Dict[str, Tuple[Path, str]]
 CHUNK = 65536
@@ -55,15 +57,6 @@ def create_handler(
 ) -> type[http.server.BaseHTTPRequestHandler]:
     """Build a handler that answers only for indexed paths."""
 
-    checked: Dict[str, bool] = {}
-
-    def checksum_ok(key: str, target: Path, expected: str) -> bool:
-        if key not in checked:
-            checked[key] = compute_sha256(target) == expected
-            if not checked[key] and on_mismatch is not None:
-                on_mismatch(key)
-        return checked[key]
-
     class DepotHandler(http.server.BaseHTTPRequestHandler):
         server_version = "SonicDepot/1"
 
@@ -96,18 +89,34 @@ def create_handler(
                 return
 
             target, expected = entry
-            if verify and not checksum_ok(path, target, expected):
-                self._reject(500, "Registered artifact failed verification")
-                return
-
             try:
-                size = target.stat().st_size
                 stream = target.open("rb")
             except OSError:
                 self._reject(404, "Not found")
                 return
 
             with stream:
+                try:
+                    size = os.fstat(stream.fileno()).st_size
+                except OSError:
+                    self._reject(404, "Not found")
+                    return
+
+                # Hash and serve from this one descriptor. Verification is never
+                # cached across requests, so a later write - including one through
+                # a hardlink - is detected on the next request, and the bytes sent
+                # are the bytes that were just hashed.
+                if verify:
+                    digest = hashlib.sha256()
+                    while chunk := stream.read(CHUNK):
+                        digest.update(chunk)
+                    if digest.hexdigest() != expected:
+                        if on_mismatch is not None:
+                            on_mismatch(path)
+                        self._reject(500, "Registered artifact failed verification")
+                        return
+                    stream.seek(0)
+
                 self.send_response(200)
                 content_type = mimetypes.guess_type(target.name)[0] or "application/octet-stream"
                 self.send_header("Content-Type", content_type)
@@ -116,8 +125,12 @@ def create_handler(
                 self.end_headers()
                 if head_only:
                     return
+                sent = 0
                 while chunk := stream.read(CHUNK):
                     self.wfile.write(chunk)
+                    sent += len(chunk)
+                if sent != size:
+                    print(f"depot: short read for {path}: {sent}/{size} bytes", flush=True)
 
         def list_directory(self, path):  # noqa: ARG002
             return None  # never generate a listing
