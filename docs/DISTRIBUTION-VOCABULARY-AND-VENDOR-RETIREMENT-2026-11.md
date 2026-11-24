@@ -50,6 +50,8 @@ Sequence (one reviewed change, not a sweep):
 
 Licence and attribution obligations are satisfied by the catalogue record (`upstream_url`, `license`, `resolved_ref`), not by keeping an unverified copy on disk.
 
+**Executed 2026-11-24.** `~/Code/Vendor` (745,613,366 bytes across 44,972 files) moved to the macOS Trash. `VENDOR_MANIFEST.yaml` (`sha256 eb847cc7…0fd2`) and the decision history are captured in `Depot/receipts/vendor-retirement-2026-11-24.json`. Retained in the Depot instead of deleted: `fonts/` (13 MB), `fonts-retro/` (8.9 MB), `bedstead-3.261.zip` (1.6 MB) and `tools/bbclinux.zip` (22 MB). The uCode font manifest still names `~/Code/Vendor/fonts/retro` — a path that was already stale before this change — and should be repointed at the Depot in a separate reviewed edit.
+
 ## 3. Offline installs: what the artifact can and cannot do
 
 Measured on 2026-11-24 for NanoCoder 1.30.0:
@@ -106,11 +108,14 @@ GridCore notes are read-only. Curation (register, prune, approve an update) happ
 
 - `packages/gridcore`: 196 tests passing across 28 files, including `library-pages.test.ts` and `sonic-commands.test.ts`.
 - `scripts/install_nanocoder.sh` (uCore): artifact-first install, byte-identity check, patch assertions, uninstall/replace; 18 backend tests passing including the pin-drift contract test.
-- Vendor hygiene baseline before retirement: 28 manifest entries, 20 RAW repos/ZIPs, `PASSED`.
+- Sonic catalogue: `cli/sonic/lib/catalogue.py`, `cli/sonic/commands/catalogue.py`, `cli/tests/test_catalogue.py` (10 tests) — base seed loads from `~/Public/global-knowledge/datasets/distribution_catalogue.json`, snapshot merges Depot retention, missing file or hash mismatch never reports `verified`.
+- Explicit depot roots: `depot list|register|verify --depot <root>` with a CLI test proving no duplicate copy is made when the artifact already lives in the depot.
+- Depot contents after the first registration: `nanocollective-nanocoder-1.30.0.tgz` (hardlinked to the installer cache, one inode), 46 MB of retained assets, two receipts. `sonic depot verify nanocoder --depot ~/Code/Depot` → `verified`.
+- Storage before/after: `.udos` 124 GiB → 52 GiB; Colima runtime 77 GiB → 4.4 GiB; host free 91 GiB → 164 GiB. Vendor hygiene baseline before retirement: 28 manifest entries, 20 RAW repos/ZIPs, `PASSED`.
 
-## 7. Open decisions
+## 7. Decisions recorded
 
-- Where the catalogue snapshot is authored. Recommendation: schema and CLI in Sonic; the exported instance stays a Depot artifact, never committed with private paths.
-- Whether a portable capsule set needs its own extension (`.capsule-set`) or is a directory of capsules plus one manifest. Recommendation: directory + manifest, no new extension.
-- Encryption at rest for removable media: host-managed volume (APFS/LUKS) recorded in the manifest; Sonic adds no crypto.
+- Decided: schema and CLI live in Sonic; the distributable base catalogue is a Layer 0 seed in `global-knowledge/datasets/`; the local instance (retention, verification, receipts) lives in the Depot and is never committed.
+- Open: whether a portable capsule set needs its own extension (`.capsule-set`) or is a directory of capsules plus one manifest. Recommendation: directory + manifest, no new extension.
+- Open: encryption at rest for removable media — host-managed volume (APFS/LUKS) recorded in the manifest; Sonic adds no crypto.
 
