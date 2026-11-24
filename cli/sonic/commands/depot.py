@@ -18,6 +18,7 @@ from sonic.lib.depot import (
     register_artifact,
     verify_artifact,
 )
+from sonic.lib.depot_gc import DepotGcError, build_gc_plan, format_bytes
 from sonic.lib.serve import ServeError, build_artifact_index, serve_depot
 
 
@@ -163,3 +164,117 @@ def serve(depot_dir: Optional[Path], port: int, host: str, lan: bool, no_verify:
         raise click.Abort()
     except KeyboardInterrupt:
         click.echo("\nServer stopped.")
+
+
+def _render_gc_plan(plan: dict) -> None:
+    totals = plan["totals"]
+    click.echo(f"Depot GC dry run · plan {plan['plan_id']}")
+    click.echo(f"Root: {plan['depot_root']}")
+    click.echo(
+        f"Catalogue: {plan['catalogue']['status']} ({plan['catalogue']['path']}) · "
+        f"receipts: {plan['receipts']['count']} · local pins: {plan['pins']['count']}"
+    )
+    click.echo("")
+
+    if not plan["artifacts"]:
+        click.echo("No registered artifacts.")
+
+    for artifact in plan["artifacts"]:
+        verdict = "REMOVE" if artifact["decision"] == "remove" else "KEEP"
+        click.secho(
+            f"  {verdict:<6} {artifact['id']} [{artifact['kind']} {artifact['version']}] "
+            f"{format_bytes(artifact['bytes'])}",
+            fg="yellow" if artifact["decision"] == "remove" else None,
+        )
+        click.echo(f"         path: {artifact['relative_path'] or '<none recorded>'}")
+        click.echo(f"         why:  {artifact['reason']}")
+        verified = artifact["verified_at"] or "not recorded"
+        click.echo(f"         verified: {verified}")
+        if artifact["pins"]:
+            click.echo(
+                "         pins: " + ", ".join(f"{p['source']} ({p['detail']})" for p in artifact["pins"])
+            )
+        if artifact["references"]:
+            click.echo("         refs: " + ", ".join(ref["source"] for ref in artifact["references"]))
+        links = artifact["hardlink"]["link_count"]
+        if links and links > 1:
+            click.echo(f"         hardlinks: {links} names — unlinking one frees no file data")
+
+    click.echo("")
+    click.echo(
+        f"Artifacts {totals['artifact_count']} · retained {totals['retained_count']} · "
+        f"eligible {totals['eligible_count']}"
+    )
+    click.echo(
+        f"Artifact bytes {format_bytes(totals['artifact_bytes'])} · "
+        f"unique inodes {format_bytes(totals['unique_inode_bytes'])}"
+    )
+    click.echo(f"Eligible artifact bytes {format_bytes(totals['eligible_artifact_bytes'])}")
+    click.echo(
+        f"Estimated reclaimable {format_bytes(totals['estimated_reclaimable_bytes'])} "
+        "(zero while another hardlink remains; APFS measured at apply time)"
+    )
+    volume = plan["volume"]
+    click.echo(
+        f"Volume used before {format_bytes(volume['used_bytes'])} of "
+        f"{format_bytes(volume['total_bytes'])} · after not predicted"
+    )
+
+    if plan["problems"]:
+        click.echo("")
+        click.secho("Unresolved inputs (no removals are proposed):", fg="yellow")
+        for problem in plan["problems"]:
+            click.echo(f"  - {problem}")
+
+    click.echo("")
+    click.echo(
+        f"Plan {plan['plan_id']} is read-only. Nothing was removed. "
+        "Apply is a later milestone and must quote this plan id."
+    )
+
+
+@depot_cmd.command("gc")
+@click.option("--depot", "depot_dir", type=click.Path(file_okay=False, path_type=Path), help="Explicit depot root")
+@click.option("--retain-days", type=click.IntRange(min=0), default=None, help="Expire artifacts added more than N days ago")
+@click.option("--supersede", multiple=True, metavar="OLD=NEW@VERSION", help="Declare NEW@VERSION supersedes OLD (repeatable)")
+@click.option("--verify", is_flag=True, help="Hash retained artifacts too, not only candidates and their keepers")
+@click.option("--catalogue", "catalogue_path", type=click.Path(path_type=Path), help="Layer 0 catalogue used for pins")
+@click.option("--pins", "pins_path", type=click.Path(path_type=Path), help="Local pins file (default <depot>/pins.json)")
+@click.option("--json", "as_json", is_flag=True, help="Emit the full plan document")
+def gc(
+    depot_dir: Optional[Path],
+    retain_days: Optional[int],
+    supersede: tuple,
+    verify: bool,
+    catalogue_path: Optional[Path],
+    pins_path: Optional[Path],
+    as_json: bool,
+):
+    """Plan retention for the depot. Read-only: prints a plan id, removes nothing."""
+    explicit = depot_dir or (os.environ.get("SONIC_DEPOT_ROOT") or "")
+    if not explicit:
+        click.secho(
+            "An explicit depot root is required: pass --depot or set SONIC_DEPOT_ROOT.",
+            fg="red",
+            err=True,
+        )
+        raise click.Abort()
+
+    try:
+        plan = build_gc_plan(
+            Path(explicit),
+            retain_days=retain_days,
+            supersede=supersede,
+            verify=verify,
+            catalogue_path=catalogue_path,
+            pins_path=pins_path,
+        )
+    except DepotGcError as exc:
+        click.secho(f"Depot GC error: {exc}", fg="red", err=True)
+        raise click.Abort()
+
+    if as_json:
+        click.echo(json.dumps(plan, indent=2))
+        return
+
+    _render_gc_plan(plan)
