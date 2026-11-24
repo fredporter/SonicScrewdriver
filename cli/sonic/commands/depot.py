@@ -14,6 +14,7 @@ import click
 
 from sonic.lib.depot import (
     DepotError,
+    get_default_depot_roots,
     list_artifacts,
     register_artifact,
     verify_artifact,

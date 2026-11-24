@@ -525,3 +525,16 @@ def test_default_depot_roots_exclude_the_retired_vendor_lane(monkeypatch, tmp_pa
     assert roots
     assert all("Vendor" not in str(root) for root in roots)
     assert roots[-1] == (tmp_path / "udos" / "sonic" / "depot").resolve()
+
+
+def test_cli_depot_list_without_an_explicit_root_uses_discovery(runner, monkeypatch, tmp_path: Path):
+    from sonic.cli import cli
+
+    monkeypatch.delenv("SONIC_DEPOT_ROOT", raising=False)
+    monkeypatch.setenv("UDOS_HOME", str(tmp_path / "udos"))
+
+    result = runner.invoke(cli, ["depot", "list"])
+
+    assert result.exit_code == 0, result.output
+    assert "Active Depot Roots" in result.output
+    assert "No artifacts registered" in result.output
